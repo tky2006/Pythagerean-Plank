@@ -1,928 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Pythagorean Plank</title>
-<style>
-  /* ===== RESET & BASE ===== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --blue:       #1a7abf;
-    --blue-dark:  #0e5a8a;
-    --blue-light: #4aa8e8;
-    --teal:       #17a89b;
-    --teal-light: #2dd4c8;
-    --wood:       #b5722a;
-    --wood-light: #d9952f;
-    --wood-dark:  #8c561d;
-    --cream:      #fdf6e3;
-    --bg:         #0d1b2e;
-    --bg2:        #112240;
-    --bg3:        #1a3356;
-    --panel:      #1e3a5f;
-    --panel2:     #243f6a;
-    --text:       #e8f4fd;
-    --text-dim:   #8aaccc;
-    --green:      #28d46a;
-    --red:        #e84040;
-    --gold:       #f5c518;
-    --shadow:     0 4px 24px rgba(0,0,0,0.5);
-    --glow-blue:  0 0 18px rgba(74,168,232,0.6);
-    --glow-teal:  0 0 18px rgba(45,212,200,0.6);
-    --glow-gold:  0 0 18px rgba(245,197,24,0.6);
-    --radius:     14px;
-    --radius-sm:  8px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pythagorean Plank · 3‑star</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1a7abf; --blue-dark: #0e5a8a; --blue-light: #4aa8e8;
+      --teal: #17a89b; --teal-light: #2dd4c8;
+      --wood: #b5722a; --wood-light: #d9952f; --wood-dark: #8c561d;
+      --cream: #fdf6e3; --bg: #0d1b2e; --bg2: #112240; --bg3: #1a3356;
+      --panel: #1e3a5f; --panel2: #243f6a;
+      --text: #e8f4fd; --text-dim: #8aaccc;
+      --green: #28d46a; --red: #e84040; --gold: #f5c518;
+      --shadow: 0 4px 24px rgba(0,0,0,0.5);
+      --glow-blue: 0 0 18px rgba(74,168,232,0.6);
+      --glow-gold: 0 0 18px rgba(245,197,24,0.6);
+      --radius: 14px; --radius-sm: 8px;
+    }
+    html, body { width: 100%; height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; user-select: none; touch-action: none; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(74,168,232,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(74,168,232,0.06) 1px, transparent 1px), linear-gradient(rgba(74,168,232,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(74,168,232,0.03) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+      pointer-events: none; z-index: 0;
+    }
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; overflow-y: auto; padding: 16px; }
+    .screen.active { opacity: 1; pointer-events: all; }
 
-  html, body {
-    width: 100%; height: 100%;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-  }
+    /* START SCREEN */
+    #startScreen { background: linear-gradient(160deg, var(--bg), var(--bg2), var(--bg3)); }
+    .start-logo { font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 900; background: linear-gradient(135deg, var(--blue-light), var(--teal-light), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; line-height: 1.1; margin-bottom: 8px; filter: drop-shadow(0 0 30px rgba(74,168,232,0.4)); }
+    .start-subtitle { font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--text-dim); text-align: center; margin-bottom: 30px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 36px; border: none; border-radius: 50px; font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; cursor: pointer; transition: 0.15s; letter-spacing: 0.5px; min-width: 180px; }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: #fff; box-shadow: 0 4px 20px rgba(26,122,191,0.5); }
+    .btn-primary:hover { box-shadow: 0 6px 28px rgba(26,122,191,0.7); transform: translateY(-2px); }
+    .btn-secondary { background: var(--panel); color: var(--text); border: 1px solid rgba(74,168,232,0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+    .btn-secondary:hover { border-color: rgba(74,168,232,0.6); transform: translateY(-2px); }
+    .btn-wood { background: linear-gradient(135deg, var(--wood), var(--wood-dark)); color: #fff2d8; box-shadow: 0 4px 20px rgba(181,114,42,0.5); }
+    .start-btns { display: flex; flex-direction: column; gap: 14px; align-items: center; }
 
-  /* ===== GRAPH PAPER BACKGROUND ===== */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(74,168,232,0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74,168,232,0.06) 1px, transparent 1px),
-      linear-gradient(rgba(74,168,232,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74,168,232,0.03) 1px, transparent 1px);
-    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
-    pointer-events: none;
-    z-index: 0;
-  }
+    /* ===== SLIDESHOW INSTRUCTIONS ===== */
+    #instructionsScreen { background: linear-gradient(160deg, var(--bg), var(--bg2)); justify-content: flex-start; padding-top: 20px; }
+    .slide-container { width: 100%; max-width: 820px; flex: 1; display: flex; flex-direction: column; gap: 14px; padding-bottom: 20px; }
+    .slide-header { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .slide-title { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 900; background: linear-gradient(135deg, var(--blue-light), var(--teal-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .slide-dots { display: flex; gap: 10px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(74,168,232,0.25); border: none; cursor: pointer; transition: 0.2s; }
+    .dot.active { background: var(--blue-light); box-shadow: var(--glow-blue); }
+    .slide-card {
+      background: var(--panel); border: 1px solid rgba(74,168,232,0.2); border-radius: var(--radius); padding: 20px 24px;
+      box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; gap: 12px;
+      min-height: 260px; justify-content: center;
+    }
+    .slide-card h3 { font-size: clamp(1rem, 2.2vw, 1.3rem); font-weight: 700; color: var(--teal-light); display: flex; align-items: center; gap: 10px; }
+    .slide-card .content { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+    .slide-card .content .text { flex: 1; min-width: 180px; font-size: clamp(0.9rem, 1.8vw, 1rem); line-height: 1.6; color: var(--text); }
+    .slide-card .content .text .highlight { color: var(--gold); font-weight: 700; }
+    .slide-card .content .media { flex: 0 0 140px; display: flex; justify-content: center; align-items: center; }
+    .slide-card .content .media svg { width: 140px; height: 110px; }
+    .slide-nav { display: flex; gap: 16px; justify-content: center; margin-top: 6px; }
+    .slide-nav .btn { min-width: 120px; padding: 10px 20px; }
+    .slide-counter { color: var(--text-dim); font-size: 0.9rem; text-align: center; }
 
-  /* ===== SCREEN SYSTEM ===== */
-  .screen {
-    position: fixed; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 10;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    overflow-y: auto;
-    padding: 16px;
-  }
-  .screen.active { opacity: 1; pointer-events: all; }
+    /* GAME SCREEN */
+    #gameScreen { background: transparent; flex-direction: column; justify-content: flex-start; padding: 0; overflow: hidden; }
+    .hud { width: 100%; max-width: 900px; margin: 0 auto; padding: 10px 16px 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; z-index: 20; flex-shrink: 0; }
+    .hud-block { display: flex; align-items: center; gap: 6px; background: rgba(30,58,95,0.85); border: 1px solid rgba(74,168,232,0.2); border-radius: 50px; padding: 5px 12px; backdrop-filter: blur(8px); }
+    .hud-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; }
+    .hud-val { font-size: 0.95rem; font-weight: 700; min-width: 20px; }
+    .lives-display { display: flex; gap: 4px; }
+    .life-icon { width: 22px; height: 22px; object-fit: contain; transition: 0.3s; }
+    .life-icon.lost { opacity: 0.18; transform: scale(0.8); filter: grayscale(1); }
+    #timerVal.urgent { color: var(--red); animation: timerPulse 0.5s infinite alternate; }
+    @keyframes timerPulse { from { opacity: 1; } to { opacity: 0.4; } }
+    .mute-btn { background: rgba(30,58,95,0.85); border: 1px solid rgba(74,168,232,0.2); border-radius: 50px; padding: 5px 12px; color: var(--text-dim); cursor: pointer; font-size: 0.82rem; backdrop-filter: blur(8px); margin-left: auto; }
 
-  /* ===== START SCREEN ===== */
-  #startScreen {
-    background: linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
-  }
-  .start-logo {
-    font-size: clamp(2.2rem, 6vw, 4rem);
-    font-weight: 900;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, var(--blue-light), var(--teal-light), var(--gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
-    line-height: 1.1;
-    margin-bottom: 8px;
-    filter: drop-shadow(0 0 30px rgba(74,168,232,0.4));
-  }
-  .start-subtitle {
-    font-size: clamp(0.85rem, 2vw, 1.1rem);
-    color: var(--text-dim);
-    text-align: center;
-    margin-bottom: 40px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-  .start-triangle-preview {
-    position: relative;
-    width: 180px; height: 140px;
-    margin: 0 auto 40px;
-    filter: drop-shadow(var(--glow-blue));
-  }
-  .start-triangle-preview svg { width: 100%; height: 100%; }
+    .game-area { flex: 1; width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding: 6px 16px 10px; overflow: hidden; z-index: 10; }
+    .formula-ref { display: flex; align-items: center; gap: 8px; background: rgba(30,58,95,0.7); border: 1px solid rgba(245,197,24,0.3); border-radius: 50px; padding: 4px 14px; font-size: clamp(0.75rem, 1.8vw, 0.88rem); color: var(--gold); font-weight: 700; font-family: monospace; backdrop-filter: blur(6px); flex-shrink: 0; align-self: center; }
+    .triangle-container { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+    #triangleCanvas { border-radius: var(--radius); touch-action: none; cursor: grab; max-width: 100%; max-height: 100%; }
+    #triangleCanvas:active { cursor: grabbing; }
 
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 14px 36px;
-    border: none; border-radius: 50px;
-    font-size: clamp(1rem, 2.5vw, 1.15rem);
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
-    min-width: 180px;
-  }
-  .btn::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(255,255,255,0);
-    transition: background 0.15s;
-    border-radius: inherit;
-  }
-  .btn:hover::after { background: rgba(255,255,255,0.08); }
-  .btn:active { transform: scale(0.97); }
+    .plank-bench { width: 100%; background: linear-gradient(180deg, rgba(30,48,72,0.9), rgba(20,35,55,0.95)); border: 1px solid rgba(74,168,232,0.2); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; backdrop-filter: blur(8px); }
+    .bench-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; text-align: center; }
+    .planks-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .plank-option {
+      position: relative; display: flex; align-items: center; justify-content: center;
+      min-width: clamp(90px, 26vw, 160px); height: clamp(44px, 8vw, 58px);
+      border-radius: 10px; background: linear-gradient(180deg, var(--wood-light), var(--wood) 40%, var(--wood-dark));
+      border: 2.5px solid rgba(255,220,140,0.3); cursor: grab;
+      transition: 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,230,150,0.3);
+      touch-action: none; overflow: hidden;
+    }
+    .plank-option:active { cursor: grabbing; }
+    .plank-option.selected { border-color: var(--gold); box-shadow: 0 0 18px rgba(245,197,24,0.5), 0 4px 12px rgba(0,0,0,0.4); transform: translateY(-3px); }
+    .plank-option.correct-flash { animation: correctFlash 0.6s ease forwards; }
+    .plank-option.wrong-flash { animation: wrongFlash 0.5s ease forwards; }
+    @keyframes correctFlash { 0% { border-color: var(--gold); } 50% { border-color: var(--green); box-shadow: 0 0 24px rgba(40,212,106,0.7); } 100% { border-color: var(--green); } }
+    @keyframes wrongFlash { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); border-color: var(--red); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+    .plank-length-label { font-size: clamp(0.9rem, 2.5vw, 1.05rem); font-weight: 900; color: #fff2d0; text-shadow: 0 1px 3px rgba(0,0,0,0.6); z-index: 1; pointer-events: none; }
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
-    color: #fff;
-    box-shadow: 0 4px 20px rgba(26,122,191,0.5);
-  }
-  .btn-primary:hover { box-shadow: 0 6px 28px rgba(26,122,191,0.7); transform: translateY(-2px); }
+    #dragGhost { position: fixed; pointer-events: none; z-index: 9999; display: none; border-radius: 10px; background: linear-gradient(180deg, var(--wood-light), var(--wood) 40%, var(--wood-dark)); border: 2.5px solid var(--gold); box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 20px rgba(245,197,24,0.4); align-items: center; justify-content: center; font-weight: 900; color: #fff2d0; text-shadow: 0 1px 3px rgba(0,0,0,0.6); overflow: hidden; }
+    #dragGhost.visible { display: flex; }
 
-  .btn-secondary {
-    background: linear-gradient(135deg, var(--panel), var(--panel2));
-    color: var(--text);
-    border: 1px solid rgba(74,168,232,0.3);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  }
-  .btn-secondary:hover { border-color: rgba(74,168,232,0.6); transform: translateY(-2px); }
+    #resultOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 50; opacity: 0; transition: 0.2s; }
+    #resultOverlay.show { opacity: 1; }
+    .result-icon { width: clamp(60px, 15vw, 100px); height: clamp(60px, 15vw, 100px); object-fit: contain; }
 
-  .btn-wood {
-    background: linear-gradient(135deg, var(--wood), var(--wood-dark));
-    color: #fff2d8;
-    box-shadow: 0 4px 20px rgba(181,114,42,0.5);
-  }
-  .btn-wood:hover { box-shadow: 0 6px 28px rgba(181,114,42,0.7); transform: translateY(-2px); }
-
-  .btn-green {
-    background: linear-gradient(135deg, #1fa850, #157a38);
-    color: #fff;
-    box-shadow: 0 4px 20px rgba(40,212,106,0.4);
-  }
-  .btn-green:hover { box-shadow: 0 6px 28px rgba(40,212,106,0.6); transform: translateY(-2px); }
-
-  .start-btns { display: flex; flex-direction: column; gap: 14px; align-items: center; }
-
-  /* ===== INSTRUCTIONS SCREEN ===== */
-  #instructionsScreen {
-    background: linear-gradient(160deg, var(--bg) 0%, var(--bg2) 100%);
-    justify-content: flex-start;
-    padding-top: 24px;
-    overflow-y: auto;
-  }
-  .instructions-inner {
-    width: 100%; max-width: 820px;
-    display: flex; flex-direction: column; gap: 22px;
-    padding-bottom: 30px;
-  }
-  .instr-title {
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    font-weight: 900;
-    text-align: center;
-    background: linear-gradient(135deg, var(--blue-light), var(--teal-light));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    margin-bottom: 4px;
-  }
-  .instr-card {
-    background: var(--panel);
-    border: 1px solid rgba(74,168,232,0.2);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    box-shadow: var(--shadow);
-  }
-  .instr-card h3 {
-    font-size: clamp(0.95rem, 2vw, 1.1rem);
-    font-weight: 700;
-    color: var(--teal-light);
-    margin-bottom: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .instr-card h3 .icon { font-size: 1.2em; }
-  .step-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .step-list li {
-    display: flex; align-items: flex-start; gap: 12px;
-    font-size: clamp(0.88rem, 1.8vw, 0.98rem);
-    color: var(--text);
-    line-height: 1.5;
-  }
-  .step-num {
-    min-width: 28px; height: 28px;
-    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  /* Formula box */
-  .formula-box {
-    background: rgba(26,122,191,0.12);
-    border: 1px solid rgba(74,168,232,0.35);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    text-align: center;
-    margin: 10px 0;
-  }
-  .formula-big {
-    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
-    font-weight: 900;
-    color: var(--gold);
-    letter-spacing: 2px;
-    font-family: 'Courier New', monospace;
-  }
-  .formula-example {
-    font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-    color: var(--text-dim);
-    margin-top: 6px;
-  }
-
-  /* Triangle diagram */
-  .diagram-row { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
-  .diagram-svg { width: 140px; height: 110px; flex-shrink: 0; }
-
-  /* Keyboard layout */
-  .kbd-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  .kbd-item { display: flex; align-items: center; gap: 8px; }
-  .kbd-key {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 38px; height: 36px; padding: 0 8px;
-    background: var(--panel2);
-    border: 1px solid rgba(74,168,232,0.4);
-    border-bottom: 3px solid rgba(74,168,232,0.6);
-    border-radius: 6px;
-    font-size: 0.82rem; font-weight: 700;
-    font-family: 'Courier New', monospace;
-    color: var(--blue-light);
-    white-space: nowrap;
-  }
-  .kbd-label { font-size: 0.85rem; color: var(--text-dim); }
-
-  /* Touch controls */
-  .touch-row { display: flex; gap: 18px; flex-wrap: wrap; }
-  .touch-item { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--text-dim); }
-  .touch-icon { font-size: 1.4rem; }
-
-  /* Screenshot placeholder */
-  .screenshot-placeholder {
-    border: 2.5px dashed rgba(74,168,232,0.4);
-    border-radius: var(--radius);
-    min-height: 200px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 10px;
-    background: rgba(26,122,191,0.05);
-    color: var(--text-dim);
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 20px;
-  }
-  .screenshot-placeholder .ph-icon { font-size: 2.5rem; opacity: 0.5; }
-  .screenshot-placeholder .ph-label { font-weight: 700; color: var(--blue-light); font-size: 1rem; letter-spacing: 0.5px; }
-
-  /* Tips */
-  .tips-grid { display: flex; flex-direction: column; gap: 8px; }
-  .tip-item {
-    display: flex; align-items: center; gap: 10px;
-    font-size: clamp(0.85rem, 1.7vw, 0.95rem);
-    color: var(--text);
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.03);
-    border-radius: var(--radius-sm);
-    border-left: 3px solid var(--gold);
-  }
-  .tip-icon { font-size: 1rem; }
-
-  /* Asset preview row in instructions */
-  .asset-row {
-    display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap;
-    margin-top: 6px;
-  }
-  .asset-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .asset-item img { width: 44px; height: 44px; object-fit: contain; }
-  .asset-item span { font-size: 0.75rem; color: var(--text-dim); }
-
-  /* ===== GAME SCREEN ===== */
-  #gameScreen {
-    background: transparent;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  /* HUD */
-  .hud {
-    width: 100%; max-width: 900px;
-    margin: 0 auto;
-    padding: 10px 16px 6px;
-    display: flex; align-items: center; gap: 10px;
-    flex-wrap: wrap;
-    position: relative; z-index: 20;
-    flex-shrink: 0;
-  }
-  .hud-block {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(30,58,95,0.85);
-    border: 1px solid rgba(74,168,232,0.2);
-    border-radius: 50px;
-    padding: 5px 12px;
-    backdrop-filter: blur(8px);
-  }
-  .hud-block img { width: 20px; height: 20px; object-fit: contain; }
-  .hud-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-  .hud-val { font-size: 0.95rem; font-weight: 700; color: var(--text); min-width: 20px; }
-
-  /* Lives */
-  .lives-display { display: flex; align-items: center; gap: 4px; }
-  .life-icon { width: 22px; height: 22px; object-fit: contain; transition: transform 0.3s, opacity 0.3s; }
-  .life-icon.lost { opacity: 0.18; transform: scale(0.8); filter: grayscale(1); }
-
-  /* Timer */
-  #timerVal { color: var(--text); transition: color 0.3s; }
-  #timerVal.urgent { color: var(--red); animation: timerPulse 0.5s infinite alternate; }
-  @keyframes timerPulse { from { opacity: 1; } to { opacity: 0.5; } }
-
-  /* Mute btn */
-  .mute-btn {
-    background: rgba(30,58,95,0.85);
-    border: 1px solid rgba(74,168,232,0.2);
-    border-radius: 50px;
-    padding: 5px 12px;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 0.82rem;
-    display: flex; align-items: center; gap: 5px;
-    transition: border-color 0.2s, color 0.2s;
-    backdrop-filter: blur(8px);
-    margin-left: auto;
-  }
-  .mute-btn:hover { border-color: rgba(74,168,232,0.5); color: var(--text); }
-
-  /* Kbd hints bar */
-  .kbd-hints {
-    display: none;
-    width: 100%; max-width: 900px;
-    margin: 0 auto;
-    padding: 3px 16px;
-    gap: 12px;
-    align-items: center;
-    flex-shrink: 0;
-    position: relative; z-index: 20;
-  }
-  @media (min-width: 600px) { .kbd-hints { display: flex; } }
-  .kbd-hint-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--text-dim); }
-  .kbd-hint-key {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 22px; height: 20px; padding: 0 4px;
-    background: var(--panel2);
-    border: 1px solid rgba(74,168,232,0.3);
-    border-bottom: 2px solid rgba(74,168,232,0.5);
-    border-radius: 4px;
-    font-size: 0.68rem; font-weight: 700;
-    font-family: 'Courier New', monospace;
-    color: var(--blue-light);
-  }
-
-  /* Main gameplay area */
-  .game-area {
-    flex: 1;
-    width: 100%; max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 16px 10px;
-    overflow: hidden;
-    position: relative;
-    z-index: 10;
-  }
-
-  /* Formula reference */
-  .formula-ref {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(30,58,95,0.7);
-    border: 1px solid rgba(245,197,24,0.3);
-    border-radius: 50px;
-    padding: 4px 14px;
-    font-size: clamp(0.75rem, 1.8vw, 0.88rem);
-    color: var(--gold);
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 0.5px;
-    backdrop-filter: blur(6px);
-    flex-shrink: 0;
-  }
-
-  /* Triangle canvas container */
-  .triangle-container {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 0;
-  }
-  #triangleCanvas {
-    border-radius: var(--radius);
-    touch-action: none;
-    cursor: grab;
-    max-width: 100%;
-    max-height: 100%;
-  }
-  #triangleCanvas:active { cursor: grabbing; }
-
-  /* Plank options bench */
-  .plank-bench {
-    width: 100%;
-    background: linear-gradient(180deg, rgba(30,48,72,0.9) 0%, rgba(20,35,55,0.95) 100%);
-    border: 1px solid rgba(74,168,232,0.2);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex-shrink: 0;
-    backdrop-filter: blur(8px);
-  }
-  .bench-label {
-    font-size: 0.72rem; font-weight: 700; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 1px;
-    text-align: center;
-  }
-  .planks-row {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .plank-option {
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-    min-width: clamp(90px, 26vw, 160px);
-    height: clamp(44px, 8vw, 58px);
-    border-radius: 10px;
-    background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 40%, var(--wood-dark) 100%);
-    border: 2.5px solid rgba(255,220,140,0.3);
-    cursor: grab;
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,230,150,0.3);
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
-  }
-  .plank-option::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(
-      90deg, transparent, transparent 18px,
-      rgba(0,0,0,0.06) 18px, rgba(0,0,0,0.06) 19px
-    );
-    border-radius: inherit;
-  }
-  .plank-option:active { cursor: grabbing; }
-  .plank-option.selected {
-    border-color: var(--gold);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 18px rgba(245,197,24,0.5), inset 0 1px 0 rgba(255,230,150,0.3);
-    transform: translateY(-3px);
-  }
-  .plank-option.correct-flash {
-    animation: correctFlash 0.6s ease forwards;
-  }
-  .plank-option.wrong-flash {
-    animation: wrongFlash 0.5s ease forwards;
-  }
-  @keyframes correctFlash {
-    0% { border-color: var(--gold); }
-    50% { border-color: var(--green); box-shadow: 0 0 24px rgba(40,212,106,0.7); }
-    100% { border-color: var(--green); }
-  }
-  @keyframes wrongFlash {
-    0%,100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); border-color: var(--red); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
-  }
-
-  .plank-num-badge {
-    position: absolute; top: 3px; left: 6px;
-    font-size: 0.65rem; font-weight: 900;
-    color: rgba(255,220,140,0.7);
-    font-family: 'Courier New', monospace;
-    line-height: 1;
-  }
-  .plank-length-label {
-    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
-    font-weight: 900;
-    color: #fff2d0;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    letter-spacing: 0.5px;
-    position: relative; z-index: 1;
-    pointer-events: none;
-  }
-
-  /* Dragging ghost */
-  #dragGhost {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    display: none;
-    transform-origin: center center;
-    border-radius: 10px;
-    background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 40%, var(--wood-dark) 100%);
-    border: 2.5px solid var(--gold);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 20px rgba(245,197,24,0.4);
-    display: none;
-    align-items: center; justify-content: center;
-    font-size: 1rem; font-weight: 900;
-    color: #fff2d0;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    overflow: hidden;
-  }
-  #dragGhost::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(
-      90deg, transparent, transparent 18px,
-      rgba(0,0,0,0.06) 18px, rgba(0,0,0,0.06) 19px
-    );
-  }
-  #dragGhost.visible { display: flex; }
-
-  /* Round notification */
-  #roundNotif {
-    position: fixed;
-    top: 80px; left: 50%; transform: translateX(-50%);
-    background: rgba(30,58,95,0.92);
-    border: 1px solid rgba(74,168,232,0.4);
-    border-radius: 50px;
-    padding: 8px 22px;
-    font-size: 0.88rem; font-weight: 700;
-    color: var(--teal-light);
-    pointer-events: none;
-    z-index: 100;
-    opacity: 0;
-    transition: opacity 0.3s;
-    backdrop-filter: blur(8px);
-    white-space: nowrap;
-  }
-  #roundNotif.show { opacity: 1; }
-
-  /* Result overlay on canvas */
-  #resultOverlay {
-    position: absolute;
-    inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    pointer-events: none;
-    z-index: 50;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  #resultOverlay.show { opacity: 1; }
-  .result-icon { width: clamp(60px, 15vw, 100px); height: clamp(60px, 15vw, 100px); object-fit: contain; }
-
-  /* ===== END SCREEN ===== */
-  #endScreen {
-    background: linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
-  }
-  .end-title {
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 6px;
-  }
-  .end-title.win {
-    background: linear-gradient(135deg, var(--gold), #ffb300);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(245,197,24,0.5));
-  }
-  .end-title.lose {
-    background: linear-gradient(135deg, #e84040, #c02020);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(232,64,64,0.4));
-  }
-  .end-subtitle { font-size: clamp(0.85rem, 2vw, 1rem); color: var(--text-dim); text-align: center; margin-bottom: 30px; }
-  .end-stats {
-    display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center;
-  }
-  .stat-card {
-    background: var(--panel);
-    border: 1px solid rgba(74,168,232,0.25);
-    border-radius: var(--radius);
-    padding: 16px 24px;
-    text-align: center;
-    min-width: 120px;
-  }
-  .stat-val { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 900; color: var(--gold); }
-  .stat-val img { width: 28px; height: 28px; object-fit: contain; vertical-align: middle; margin-right: 4px; }
-  .stat-label { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .end-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-
-  /* ===== ANIMATIONS ===== */
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .anim-slide-up { animation: slideUp 0.5s ease forwards; }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  /* Score pop */
-  .score-pop {
-    position: fixed;
-    pointer-events: none;
-    z-index: 200;
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: var(--gold);
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    animation: scorePop 1.2s ease forwards;
-  }
-  @keyframes scorePop {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
-  }
-
-  /* Drop zone glow on canvas is handled by JS drawing */
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 480px) {
-    .hud { gap: 6px; }
-    .hud-block { padding: 4px 9px; }
-    .game-area { gap: 6px; padding: 4px 10px 8px; }
-    .plank-bench { padding: 8px 10px; }
-    .planks-row { gap: 7px; }
-  }
-  @media (orientation: landscape) and (max-height: 500px) {
-    .hud { padding: 4px 14px; }
-    .game-area { gap: 4px; }
-  }
-</style>
+    /* END SCREEN with STARS */
+    #endScreen { background: linear-gradient(160deg, var(--bg), var(--bg2), var(--bg3)); }
+    .end-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; text-align: center; margin-bottom: 4px; }
+    .end-title.win { background: linear-gradient(135deg, var(--gold), #ffb300); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px rgba(245,197,24,0.5)); }
+    .end-title.lose { background: linear-gradient(135deg, #e84040, #c02020); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px rgba(232,64,64,0.4)); }
+    .end-subtitle { font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--text-dim); text-align: center; margin-bottom: 20px; }
+    .star-rating { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+    .star-rating span { font-size: 3.2rem; transition: 0.3s; filter: grayscale(1) brightness(0.5); }
+    .star-rating span.active { filter: grayscale(0) brightness(1); text-shadow: 0 0 20px gold; }
+    .end-stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+    .stat-card { background: var(--panel); border: 1px solid rgba(74,168,232,0.25); border-radius: var(--radius); padding: 14px 22px; text-align: center; min-width: 100px; }
+    .stat-val { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 900; color: var(--gold); }
+    .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
+    .end-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    #roundNotif { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(30,58,95,0.92); border: 1px solid rgba(74,168,232,0.4); border-radius: 50px; padding: 8px 22px; font-size: 0.88rem; font-weight: 700; color: var(--teal-light); pointer-events: none; z-index: 100; opacity: 0; transition: 0.3s; backdrop-filter: blur(8px); white-space: nowrap; }
+    #roundNotif.show { opacity: 1; }
+    .score-pop { position: fixed; pointer-events: none; z-index: 200; font-size: 1.4rem; font-weight: 900; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.6); animation: scorePop 1.2s ease forwards; }
+    @keyframes scorePop { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(1.3); } }
+    @media (max-width: 480px) { .hud { gap: 6px; } .plank-bench { padding: 8px; } }
+  </style>
 </head>
 <body>
 
-<!-- ===== DRAG GHOST ===== -->
 <div id="dragGhost"></div>
-
-<!-- ===== ROUND NOTIFICATION ===== -->
 <div id="roundNotif">🔺 New Triangle!</div>
 
-<!-- ================================================
-     START SCREEN
-================================================ -->
+<!-- START -->
 <div class="screen active" id="startScreen">
   <div class="start-logo">Pythagorean<br>Plank</div>
-  <div class="start-subtitle">Mathematics · Geometry · Secondary School</div>
-
-  <div class="start-triangle-preview">
-    <svg viewBox="0 0 180 140" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glowBlue"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <!-- Graph lines -->
-      <line x1="20" y1="120" x2="160" y2="120" stroke="rgba(74,168,232,0.15)" stroke-width="1"/>
-      <line x1="20" y1="20" x2="20" y2="120" stroke="rgba(74,168,232,0.15)" stroke-width="1"/>
-      <!-- Triangle -->
-      <polygon points="20,120 140,120 20,20" fill="rgba(26,122,191,0.12)" stroke="#4aa8e8" stroke-width="2.5" stroke-linejoin="round" filter="url(#glowBlue)"/>
-      <!-- Right angle -->
-      <rect x="20" y="105" width="15" height="15" fill="none" stroke="#4aa8e8" stroke-width="1.5" opacity="0.7"/>
-      <!-- Labels -->
-      <text x="83" y="136" text-anchor="middle" font-size="14" font-weight="bold" fill="#e8f4fd" font-family="Segoe UI,sans-serif">a = 3</text>
-      <text x="7" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#e8f4fd" font-family="Segoe UI,sans-serif">b = 4</text>
-      <text x="95" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#f5c518" font-family="Segoe UI,sans-serif" transform="rotate(-52,95,65)">c = ?</text>
-      <!-- Hypotenuse glow -->
-      <line x1="20" y1="20" x2="140" y2="120" stroke="#f5c518" stroke-width="3" stroke-dasharray="6,4" opacity="0.7"/>
+  <div class="start-subtitle">Mathematics · Geometry · Secondary</div>
+  <div style="margin-bottom:20px;">
+    <svg width="160" height="120" viewBox="0 0 160 120">
+      <polygon points="15,105 130,105 15,15" fill="rgba(26,122,191,0.12)" stroke="#4aa8e8" stroke-width="2.5"/>
+      <rect x="15" y="90" width="15" height="15" fill="none" stroke="#4aa8e8" stroke-width="1.5"/>
+      <text x="75" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#e8f4fd">a=3</text>
+      <text x="5" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#e8f4fd">b=4</text>
+      <text x="85" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#f5c518" transform="rotate(-46,85,55)">c=?</text>
+      <line x1="15" y1="15" x2="130" y2="105" stroke="#f5c518" stroke-width="3" stroke-dasharray="6,4" opacity="0.7"/>
     </svg>
   </div>
-
   <div class="start-btns">
     <button class="btn btn-primary" onclick="showScreen('instructionsScreen')">▶ Play</button>
     <button class="btn btn-secondary" onclick="showScreen('instructionsScreen')">📖 How to Play</button>
   </div>
 </div>
 
-<!-- ================================================
-     INSTRUCTIONS SCREEN
-================================================ -->
+<!-- INSTRUCTIONS – SLIDESHOW -->
 <div class="screen" id="instructionsScreen">
-  <div class="instructions-inner">
-    <div class="instr-title">How to Play</div>
-
-    <!-- Step by step -->
-    <div class="instr-card">
-      <h3><span class="icon">📋</span> Step-by-Step Guide</h3>
-      <ol class="step-list">
-        <li><span class="step-num">1</span>Look at the right triangle — legs <b>a</b> and <b>b</b> are shown with their lengths.</li>
-        <li><span class="step-num">2</span>Choose the correct plank length from the 3 options below (only one is correct!).</li>
-        <li><span class="step-num">3</span>Use the formula <b style="color:var(--gold)">a² + b² = c²</b> to calculate the hypotenuse length.</li>
-        <li><span class="step-num">4</span>Drag the plank to the triangle — it will snap into place if correct.</li>
-        <li><span class="step-num">5</span>If the plank fits, you win the round! If not, you lose a life. ❤️</li>
-      </ol>
+  <div class="slide-container">
+    <div class="slide-header">
+      <span class="slide-title">📐 How to Play</span>
+      <div class="slide-dots" id="dotsContainer"></div>
     </div>
-
-    <!-- Theorem reference -->
-    <div class="instr-card">
-      <h3><span class="icon">📐</span> Pythagorean Theorem Reference</h3>
-      <div class="formula-box">
-        <div class="formula-big">a² + b² = c²</div>
-        <div class="formula-example">Example: If a = 3 and b = 4, then 3² + 4² = 9 + 16 = 25, so c = √25 = <b>5</b></div>
-      </div>
-      <div class="diagram-row" style="margin-top:14px;">
-        <svg class="diagram-svg" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="15,95 115,95 15,15" fill="rgba(26,122,191,0.15)" stroke="#4aa8e8" stroke-width="2" stroke-linejoin="round"/>
-          <rect x="15" y="80" width="15" height="15" fill="none" stroke="#4aa8e8" stroke-width="1.5"/>
-          <text x="66" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#e8f4fd" font-family="Segoe UI,sans-serif">a</text>
-          <text x="5" y="58" text-anchor="middle" font-size="12" font-weight="bold" fill="#e8f4fd" font-family="Segoe UI,sans-serif">b</text>
-          <text x="80" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#f5c518" font-family="Segoe UI,sans-serif" transform="rotate(-44,80,48)">c (hyp.)</text>
-        </svg>
-        <div style="font-size:0.88rem;color:var(--text-dim);max-width:220px;line-height:1.6;">
-          <b style="color:var(--text)">a</b> and <b style="color:var(--text)">b</b> are the two shorter legs forming the right angle.<br><br>
-          <b style="color:var(--gold)">c</b> is the <b style="color:var(--gold)">hypotenuse</b> — always the longest side, opposite the right angle.
-        </div>
-      </div>
+    <div class="slide-card" id="slideCard">
+      <!-- filled by JS -->
     </div>
-
-    <!-- Keyboard controls -->
-    <div class="instr-card">
-      <h3><span class="icon">⌨️</span> Keyboard Controls</h3>
-      <div class="kbd-grid">
-        <div class="kbd-item"><span class="kbd-key">1</span><span class="kbd-label">Select Plank 1</span></div>
-        <div class="kbd-item"><span class="kbd-key">2</span><span class="kbd-label">Select Plank 2</span></div>
-        <div class="kbd-item"><span class="kbd-key">3</span><span class="kbd-label">Select Plank 3</span></div>
-        <div class="kbd-item"><span class="kbd-key">ENTER</span><span class="kbd-label">Confirm Placement</span></div>
-        <div class="kbd-item"><span class="kbd-key">SPACE</span><span class="kbd-label">Confirm Placement</span></div>
-        <div class="kbd-item"><span class="kbd-key">M</span><span class="kbd-label">Mute / Unmute Music</span></div>
-      </div>
+    <div class="slide-nav">
+      <button class="btn btn-secondary" id="prevSlide" onclick="changeSlide(-1)">◀ Back</button>
+      <button class="btn btn-primary" id="nextSlide" onclick="changeSlide(1)">Next ▶</button>
     </div>
-
-    <!-- Touch controls -->
-    <div class="instr-card">
-      <h3><span class="icon">👆</span> Touch Controls</h3>
-      <div class="touch-row">
-        <div class="touch-item"><span class="touch-icon">✋</span><span>Drag a plank from the bench to the triangle</span></div>
-        <div class="touch-item"><span class="touch-icon">📍</span><span>Drop zone highlights when you hover over it</span></div>
-        <div class="touch-item"><span class="touch-icon">✅</span><span>Release over the triangle to check your answer</span></div>
-        <div class="touch-item"><span class="touch-icon">🔒</span><span>Correct plank snaps into place with a satisfying click!</span></div>
-      </div>
-    </div>
-
-    <!-- GAMEPLAY SCREENSHOT placeholder -->
-    <div class="instr-card">
-      <h3><span class="icon">🖼️</span> Gameplay Screenshot</h3>
-      <div class="screenshot-placeholder">
-        <img src="gameplay.png" width="100%" height="100%">
-      </div>
-    </div>
-
-    <!-- Assets used in game -->
-    <div class="instr-card">
-      <h3><span class="icon">🎮</span> Game Icons</h3>
-      <div class="asset-row">
-        <div class="asset-item">
-          <img src="heart.jpg" alt="Life" onerror="this.style.display='none'"/>
-          <span>Life</span>
-        </div>
-        <div class="asset-item">
-          <img src="star.jpg" alt="Score" onerror="this.style.display='none'"/>
-          <span>Score</span>
-        </div>
-        <div class="asset-item">
-          <img src="correct.jpg" alt="Correct" onerror="this.style.display='none'"/>
-          <span>Correct!</span>
-        </div>
-        <div class="asset-item">
-          <img src="wrong.png" alt="Wrong" onerror="this.style.display='none'"/>
-          <span>Wrong</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tips -->
-    <div class="instr-card">
-      <h3><span class="icon">💡</span> Game Tips</h3>
-      <div class="tips-grid">
-        <div class="tip-item"><span class="tip-icon">📐</span>"Remember: a² + b² = c²"</div>
-        <div class="tip-item"><span class="tip-icon">📏</span>"The hypotenuse is always the longest side!"</div>
-        <div class="tip-item"><span class="tip-icon">🧮</span>"Check your math before dragging!"</div>
-        <div class="tip-item"><span class="tip-icon">⏱️</span>"Watch the timer – you have 20 seconds per round."</div>
-      </div>
-    </div>
-
-    <!-- Action buttons -->
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+    <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:6px;">
       <button class="btn btn-primary" onclick="startGame()">▶ Start Game</button>
-      <button class="btn btn-secondary" onclick="showScreen('startScreen')">← Back</button>
+      <button class="btn btn-secondary" onclick="showScreen('startScreen')">← Home</button>
     </div>
+    <div class="slide-counter" id="slideCounter">1 / 5</div>
   </div>
 </div>
 
-<!-- ================================================
-     GAME SCREEN
-================================================ -->
+<!-- GAME -->
 <div class="screen" id="gameScreen">
-  <!-- HUD -->
   <div class="hud">
-    <!-- Round -->
+    <div class="hud-block"><span class="hud-label">Round</span><span class="hud-val" id="roundVal">1</span><span class="hud-label">/10</span></div>
     <div class="hud-block">
-      <span class="hud-label">Round</span>
-      <span class="hud-val" id="roundVal">1</span>
-      <span class="hud-label">/ 10</span>
-    </div>
-    <!-- Score -->
-    <div class="hud-block">
-      <img src="star.jpg" alt="Score" onerror="this.style.opacity='0'"/>
+      <img src="star.png" alt="Score" style="width:18px;height:18px;object-fit:contain;">
       <span class="hud-val" id="scoreVal">0</span>
     </div>
-    <!-- Lives -->
     <div class="hud-block">
       <div class="lives-display" id="livesDisplay">
-        <img class="life-icon" src="heart.jpg" alt="♥" onerror="this.textContent='♥'"/>
-        <img class="life-icon" src="heart.jpg" alt="♥" onerror="this.textContent='♥'"/>
-        <img class="life-icon" src="heart.jpg" alt="♥" onerror="this.textContent='♥'"/>
+        <img class="life-icon" src="heart.png" alt="♥">
+        <img class="life-icon" src="heart.png" alt="♥">
+        <img class="life-icon" src="heart.png" alt="♥">
       </div>
     </div>
-    <!-- Timer -->
-    <div class="hud-block">
-      <span class="hud-label">⏱</span>
-      <span class="hud-val" id="timerVal">20</span>
-      <span class="hud-label">s</span>
-    </div>
-    <!-- Mute -->
+    <div class="hud-block"><span class="hud-label">⏱</span><span class="hud-val" id="timerVal">20</span><span class="hud-label">s</span></div>
     <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🎵 Music</button>
   </div>
-
-  <!-- Keyboard hints -->
-  <div class="kbd-hints">
-    <div class="kbd-hint-item"><span class="kbd-hint-key">1</span><span>/ </span><span class="kbd-hint-key">2</span><span>/ </span><span class="kbd-hint-key">3</span><span style="margin-left:4px">Select Plank</span></div>
-    <div class="kbd-hint-item"><span class="kbd-hint-key">ENTER</span><span style="margin-left:4px">Confirm</span></div>
-    <div class="kbd-hint-item"><span class="kbd-hint-key">M</span><span style="margin-left:4px">Mute</span></div>
-  </div>
-
-  <!-- Game area -->
   <div class="game-area">
-    <!-- Formula reference -->
     <div class="formula-ref">📐 a² + b² = c²</div>
-
-    <!-- Triangle canvas area -->
     <div class="triangle-container">
       <canvas id="triangleCanvas"></canvas>
-      <!-- Result overlay (correct.jpg / wrong.png) -->
-      <div id="resultOverlay">
-        <img id="resultIcon" class="result-icon" src="" alt=""/>
-      </div>
+      <div id="resultOverlay"><img id="resultIcon" class="result-icon" src="" alt=""/></div>
     </div>
-
-    <!-- Plank bench -->
     <div class="plank-bench">
-      <div class="bench-label">🪵 Choose your plank — drag it to the triangle!</div>
+      <div class="bench-label">🪵 Drag plank to triangle</div>
       <div class="planks-row" id="planksRow">
-        <div class="plank-option" data-index="0">
-          <span class="plank-num-badge">1</span>
-          <span class="plank-length-label" id="plank0Label">?</span>
-        </div>
-        <div class="plank-option" data-index="1">
-          <span class="plank-num-badge">2</span>
-          <span class="plank-length-label" id="plank1Label">?</span>
-        </div>
-        <div class="plank-option" data-index="2">
-          <span class="plank-num-badge">3</span>
-          <span class="plank-length-label" id="plank2Label">?</span>
-        </div>
+        <div class="plank-option" data-index="0"><span class="plank-length-label" id="plank0Label">?</span></div>
+        <div class="plank-option" data-index="1"><span class="plank-length-label" id="plank1Label">?</span></div>
+        <div class="plank-option" data-index="2"><span class="plank-length-label" id="plank2Label">?</span></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ================================================
-     END SCREEN
-================================================ -->
+<!-- END with STARS -->
 <div class="screen" id="endScreen">
   <div id="endTitle" class="end-title">Game Over</div>
-  <div id="endSubtitle" class="end-subtitle">Better luck next time!</div>
+  <div id="endSubtitle" class="end-subtitle"></div>
+  <div class="star-rating" id="starRating"><span>⭐</span><span>⭐</span><span>⭐</span></div>
   <div class="end-stats">
-    <div class="stat-card">
-      <div class="stat-val" id="finalScore">0</div>
-      <div class="stat-label"><img src="star.jpg" style="width:16px;height:16px;vertical-align:middle;margin-right:3px;"/>Final Score</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="finalRounds">0</div>
-      <div class="stat-label">Rounds Completed</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="finalLives">
-        <img src="heart.jpg" style="width:22px;height:22px;vertical-align:middle;"/>
-      </div>
-      <div class="stat-label">Lives Remaining</div>
-    </div>
+    <div class="stat-card"><div class="stat-val" id="finalScore">0</div><div class="stat-label">Score</div></div>
+    <div class="stat-card"><div class="stat-val" id="finalRounds">0</div><div class="stat-label">Rounds</div></div>
+    <div class="stat-card"><div class="stat-val" id="finalLives"></div><div class="stat-label">Lives</div></div>
   </div>
   <div class="end-btns">
     <button class="btn btn-primary" onclick="startGame()">🔄 Play Again</button>
@@ -930,865 +228,150 @@
   </div>
 </div>
 
-<!-- ================================================
-     JAVASCRIPT
-================================================ -->
 <script>
 'use strict';
 
-/* ============================================================
-   SCREEN SYSTEM
-============================================================ */
+/* ===== SCREENS ===== */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* ============================================================
-   AUDIO SYSTEM
-============================================================ */
-let audioCtx = null;
-let bgMusicNodes = null;
-let isMuted = false;
-
-function getAudioCtx() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-
+/* ===== AUDIO ===== */
+let audioCtx = null, bgMusicNodes = null, isMuted = false;
+function getAudioCtx() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if (audioCtx.state==='suspended') audioCtx.resume(); return audioCtx; }
 function startBgMusic() {
-  try {
-    const ctx = getAudioCtx();
-    if (bgMusicNodes) stopBgMusic();
-
-    const masterGain = ctx.createGain();
-    masterGain.gain.value = 0.5;
-    masterGain.connect(ctx.destination);
-
-    const chordProg = [
-      [261.63, 329.63, 392.00],
-      [220.00, 261.63, 329.63],
-      [174.61, 220.00, 261.63],
-      [196.00, 246.94, 293.66],
-    ];
-
-    const chordOscillators = [];
-    const chordDuration = 2.0;
-    let t = ctx.currentTime + 0.1;
-
-    chordProg.forEach((freqs, ci) => {
-      freqs.forEach(freq => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, t + ci * chordDuration);
-        gain.gain.linearRampToValueAtTime(0.3, t + ci * chordDuration + 0.1);
-        gain.gain.linearRampToValueAtTime(0.28, t + ci * chordDuration + chordDuration - 0.1);
-        gain.gain.linearRampToValueAtTime(0, t + ci * chordDuration + chordDuration);
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start(t + ci * chordDuration);
-        osc.stop(t + ci * chordDuration + chordDuration + 0.05);
-        chordOscillators.push(osc);
-      });
-    });
-
-    const melody = [
-      {f:523.25,d:0.5},{f:587.33,d:0.5},{f:659.25,d:0.5},{f:698.46,d:0.5},
-      {f:783.99,d:0.5},{f:698.46,d:0.5},{f:659.25,d:0.5},{f:587.33,d:0.5},
-      {f:523.25,d:0.5},{f:493.88,d:0.5},{f:523.25,d:0.5},{f:587.33,d:0.5},
-      {f:659.25,d:0.5},{f:698.46,d:0.5},{f:783.99,d:1.0},{f:783.99,d:0.5},
-    ];
-    const melGain = ctx.createGain();
-    melGain.gain.value = 0.40;
-    melGain.connect(masterGain);
-    let mt = t;
-    melody.forEach(note => {
-      const osc = ctx.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.value = note.f;
-      const ng = ctx.createGain();
-      ng.gain.setValueAtTime(0, mt);
-      ng.gain.linearRampToValueAtTime(0.6, mt + 0.05);
-      ng.gain.linearRampToValueAtTime(0.5, mt + note.d - 0.05);
-      ng.gain.linearRampToValueAtTime(0, mt + note.d);
-      osc.connect(ng); ng.connect(melGain);
-      osc.start(mt); osc.stop(mt + note.d + 0.05);
-      mt += note.d;
-      chordOscillators.push(osc);
-    });
-
-    bgMusicNodes = { masterGain, oscillators: chordOscillators };
-    const totalDuration = chordProg.length * chordDuration;
-    bgMusicNodes.loopTimer = setTimeout(startBgMusic, totalDuration * 1000 - 200);
-  } catch(e) { console.warn('BG music error:', e); }
+  try { if (bgMusicNodes) stopBgMusic(); const ctx=getAudioCtx(); const mg=ctx.createGain(); mg.gain.value=0.5; mg.connect(ctx.destination);
+    const chordProg=[[261.63,329.63,392.00],[220.00,261.63,329.63],[174.61,220.00,261.63],[196.00,246.94,293.66]]; const oscs=[]; let t=ctx.currentTime+0.1;
+    chordProg.forEach((freqs,ci)=>{freqs.forEach(f=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+ci*2);g.gain.linearRampToValueAtTime(0.3,t+ci*2+0.1);g.gain.linearRampToValueAtTime(0.28,t+ci*2+1.9);g.gain.linearRampToValueAtTime(0,t+ci*2+2);o.connect(g);g.connect(mg);o.start(t+ci*2);o.stop(t+ci*2+2.05);oscs.push(o);});});
+    bgMusicNodes={masterGain:mg,oscillators:oscs}; bgMusicNodes.loopTimer=setTimeout(startBgMusic,8000);
+  }catch(e){}
+}
+function stopBgMusic(){ if(bgMusicNodes){ clearTimeout(bgMusicNodes.loopTimer); try{bgMusicNodes.oscillators.forEach(o=>{try{o.stop(0)}catch(e){}});bgMusicNodes.masterGain.disconnect();}catch(e){} bgMusicNodes=null;}}
+function toggleMute(){ isMuted=!isMuted; const btn=document.getElementById('muteBtn'); if(isMuted){ stopBgMusic(); btn.textContent='🔇 Muted'; btn.style.color='var(--red)'; } else { startBgMusic(); btn.textContent='🎵 Music'; btn.style.color=''; } }
+function playSound(type){ if(isMuted)return; try{const ctx=getAudioCtx();const mg=ctx.createGain();mg.gain.value=0.5;mg.connect(ctx.destination);const now=ctx.currentTime;const s={select:()=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='square';o.frequency.setValueAtTime(380,now);g.gain.setValueAtTime(0.4,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);o.connect(g);g.connect(mg);o.start(now);o.stop(now+0.12);},dragStart:()=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(260,now);o.frequency.exponentialRampToValueAtTime(320,now+0.08);g.gain.setValueAtTime(0.3,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.1);o.connect(g);g.connect(mg);o.start(now);o.stop(now+0.12);},correct:()=>{[523.25,659.25,783.99].forEach((f,i)=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,now+i*0.12);g.gain.linearRampToValueAtTime(0.4,now+i*0.12+0.04);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.12+0.25);o.connect(g);g.connect(mg);o.start(now+i*0.12);o.stop(now+i*0.12+0.28);});},wrong:()=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(180,now);o.frequency.exponentialRampToValueAtTime(90,now+0.3);g.gain.setValueAtTime(0.35,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=400;o.connect(f);f.connect(g);g.connect(mg);o.start(now);o.stop(now+0.35);},lifeLost:()=>{[220,196,174.61].forEach((f,i)=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.3,now+i*0.15);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.15+0.2);o.connect(g);g.connect(mg);o.start(now+i*0.15);o.stop(now+i*0.15+0.22);});},roundComplete:()=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(659.25,now);o.frequency.exponentialRampToValueAtTime(880,now+0.15);g.gain.setValueAtTime(0.3,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.25);o.connect(g);g.connect(mg);o.start(now);o.stop(now+0.28);},gameOver:()=>{[440,349.23,261.63,196].forEach((f,i)=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.3,now+i*0.2);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.2+0.3);o.connect(g);g.connect(mg);o.start(now+i*0.2);o.stop(now+i*0.2+0.35);});},victory:()=>{[523.25,659.25,783.99,1046.5,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator();const g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,now+i*0.1);g.gain.linearRampToValueAtTime(0.35,now+i*0.1+0.05);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.1+0.28);o.connect(g);g.connect(mg);o.start(now+i*0.1);o.stop(now+i*0.1+0.3);});},}; if(s[type])s[type](); }catch(e){}
 }
 
-function stopBgMusic() {
-  if (bgMusicNodes) {
-    clearTimeout(bgMusicNodes.loopTimer);
-    try {
-      bgMusicNodes.oscillators.forEach(o => { try { o.stop(0); } catch(e){} });
-      bgMusicNodes.masterGain.disconnect();
-    } catch(e){}
-    bgMusicNodes = null;
-  }
-}
-
-function toggleMute() {
-  isMuted = !isMuted;
-  const btn = document.getElementById('muteBtn');
-  if (isMuted) {
-    stopBgMusic();
-    btn.textContent = '🔇 Muted';
-    btn.style.color = 'var(--red)';
-  } else {
-    startBgMusic();
-    btn.textContent = '🎵 Music';
-    btn.style.color = '';
-  }
-}
-
-function playSound(type) {
-  if (isMuted) return;
-  try {
-    const ctx = getAudioCtx();
-    const masterGain = ctx.createGain();
-    masterGain.gain.value = 0.5;
-    masterGain.connect(ctx.destination);
-    const now = ctx.currentTime;
-    const sounds = {
-      select: () => {
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = 'square'; osc.frequency.setValueAtTime(380, now);
-        g.gain.setValueAtTime(0.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        osc.connect(g); g.connect(masterGain); osc.start(now); osc.stop(now + 0.12);
-      },
-      dragStart: () => {
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = 'sine'; osc.frequency.setValueAtTime(260, now); osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
-        g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        osc.connect(g); g.connect(masterGain); osc.start(now); osc.stop(now + 0.12);
-      },
-      correct: () => {
-        [523.25, 659.25, 783.99].forEach((freq, i) => {
-          const osc = ctx.createOscillator(); const g = ctx.createGain();
-          osc.type = 'sine'; osc.frequency.value = freq;
-          g.gain.setValueAtTime(0, now + i * 0.12); g.gain.linearRampToValueAtTime(0.4, now + i * 0.12 + 0.04);
-          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.25);
-          osc.connect(g); g.connect(masterGain); osc.start(now + i * 0.12); osc.stop(now + i * 0.12 + 0.28);
-        });
-      },
-      wrong: () => {
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.exponentialRampToValueAtTime(90, now + 0.3);
-        g.gain.setValueAtTime(0.35, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-        const filt = ctx.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 400;
-        osc.connect(filt); filt.connect(g); g.connect(masterGain); osc.start(now); osc.stop(now + 0.35);
-      },
-      lifeLost: () => {
-        [220, 196, 174.61].forEach((freq, i) => {
-          const osc = ctx.createOscillator(); const g = ctx.createGain();
-          osc.type = 'sine'; osc.frequency.value = freq;
-          g.gain.setValueAtTime(0.3, now + i * 0.15); g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.2);
-          osc.connect(g); g.connect(masterGain); osc.start(now + i * 0.15); osc.stop(now + i * 0.15 + 0.22);
-        });
-      },
-      roundComplete: () => {
-        const osc = ctx.createOscillator(); const g = ctx.createGain();
-        osc.type = 'sine'; osc.frequency.setValueAtTime(659.25, now); osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-        g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-        osc.connect(g); g.connect(masterGain); osc.start(now); osc.stop(now + 0.28);
-      },
-      gameOver: () => {
-        [440, 349.23, 261.63, 196].forEach((freq, i) => {
-          const osc = ctx.createOscillator(); const g = ctx.createGain();
-          osc.type = 'sine'; osc.frequency.value = freq;
-          g.gain.setValueAtTime(0.3, now + i * 0.2); g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.2 + 0.3);
-          osc.connect(g); g.connect(masterGain); osc.start(now + i * 0.2); osc.stop(now + i * 0.2 + 0.35);
-        });
-      },
-      victory: () => {
-        [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5].forEach((freq, i) => {
-          const osc = ctx.createOscillator(); const g = ctx.createGain();
-          osc.type = 'triangle'; osc.frequency.value = freq;
-          g.gain.setValueAtTime(0, now + i * 0.1); g.gain.linearRampToValueAtTime(0.35, now + i * 0.1 + 0.05);
-          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.28);
-          osc.connect(g); g.connect(masterGain); osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
-        });
-      },
-    };
-    if (sounds[type]) sounds[type]();
-  } catch(e) { console.warn('SFX error:', e); }
-}
-
-/* ============================================================
-   ROUND DATA
-============================================================ */
-const ROUNDS = [
-  { a: 3,  b: 4,  c: 5,    label: 'c = ?' },
-  { a: 6,  b: 8,  c: 10,   label: 'c = ?' },
-  { a: 5,  b: 12, c: 13,   label: 'c = ?' },
-  { a: 8,  b: 15, c: 17,   label: 'c = ?' },
-  { a: 9,  b: 12, c: 15,   label: 'c = ?' },
-  { a: 12, b: 16, c: 20,   label: 'c = ?' },
-  { a: 2,  b: 3,  cVal: Math.sqrt(13), cDisp: '√13 ≈ 3.61' },
-  { a: 3,  b: 5,  cVal: Math.sqrt(34), cDisp: '√34 ≈ 5.83' },
-  { a: 4,  b: 7,  cVal: Math.sqrt(65), cDisp: '√65 ≈ 8.06' },
-  { a: 5,  b: 9,  cVal: Math.sqrt(106),cDisp: '√106 ≈ 10.30' },
+/* ===== SLIDESHOW ===== */
+const slides = [
+  { title: '🎯 Goal', text: 'Calculate the <span class="highlight">hypotenuse</span> (c) of each right triangle using <span class="highlight">a² + b² = c²</span>. Drag the correct wooden plank onto the triangle!', media: 'triangle' },
+  { title: '📏 Formula', text: 'Remember: <span class="highlight">a² + b² = c²</span>. The legs a and b form the right angle. The hypotenuse c is always the longest side.', media: 'formula' },
+  { title: '🖱️ Drag & Drop', text: 'Tap or click a plank from the bench, then <span class="highlight">drag</span> it onto the triangle’s hypotenuse. Release to check if it fits!', media: 'drag' },
+  { title: '❤️ Lives & Timer', text: 'You have <span class="highlight">3 lives</span> and <span class="highlight">20 seconds</span> per round. Wrong planks cost a life. Correct planks earn points + time bonus!', media: 'timer' },
+  { title: '⭐ Stars & Score', text: 'Finish all 10 rounds to get a <span class="highlight">3‑star rating</span> based on your score. Can you achieve perfection?', media: 'stars' },
 ];
+let slideIdx = 0;
+function renderSlide(idx) {
+  const s = slides[idx];
+  const card = document.getElementById('slideCard');
+  let mediaHtml = '';
+  if (s.media === 'triangle') mediaHtml = `<svg width="140" height="110" viewBox="0 0 140 110"><polygon points="15,95 115,95 15,15" fill="rgba(26,122,191,0.15)" stroke="#4aa8e8" stroke-width="2"/><rect x="15" y="80" width="15" height="15" fill="none" stroke="#4aa8e8" stroke-width="1.5"/><text x="66" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#e8f4fd">a</text><text x="4" y="58" text-anchor="middle" font-size="12" font-weight="bold" fill="#e8f4fd">b</text><text x="78" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#f5c518" transform="rotate(-44,78,48)">c</text></svg>`;
+  else if (s.media === 'formula') mediaHtml = `<div style="font-size:2rem;font-weight:900;color:var(--gold);font-family:monospace;">a² + b² = c²</div>`;
+  else if (s.media === 'drag') mediaHtml = `<div style="font-size:2.5rem;">🖱️ ➜ 📐</div>`;
+  else if (s.media === 'timer') mediaHtml = `<div style="font-size:2.5rem;">⏱️❤️</div>`;
+  else if (s.media === 'stars') mediaHtml = `<div style="font-size:2.5rem;">⭐⭐⭐</div>`;
+  card.innerHTML = `<h3>${s.title}</h3><div class="content"><div class="text">${s.text}</div><div class="media">${mediaHtml}</div></div>`;
+  document.getElementById('slideCounter').textContent = `${idx+1} / ${slides.length}`;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  document.getElementById('prevSlide').disabled = idx===0;
+  document.getElementById('nextSlide').disabled = idx===slides.length-1;
+}
+function changeSlide(delta) { slideIdx = Math.max(0, Math.min(slides.length-1, slideIdx+delta)); renderSlide(slideIdx); }
+function initSlides() {
+  const container = document.getElementById('dotsContainer');
+  slides.forEach((_,i)=>{ const d=document.createElement('button'); d.className='dot'+(i===0?' active':''); d.onclick=()=>{slideIdx=i;renderSlide(i);}; container.appendChild(d); });
+  renderSlide(0);
+}
+initSlides();
 
-function roundData(idx) {
-  const r = ROUNDS[idx];
-  const cVal = r.cVal !== undefined ? r.cVal : r.c;
-  const cDisp = r.cDisp !== undefined ? r.cDisp : String(r.c);
-  return { a: r.a, b: r.b, cVal, cDisp };
+/* ===== GAME ===== */
+const ROUNDS = [
+  { a:3,b:4,c:5 },{ a:6,b:8,c:10 },{ a:5,b:12,c:13 },{ a:8,b:15,c:17 },
+  { a:9,b:12,c:15 },{ a:12,b:16,c:20 },{ a:2,b:3,c:Math.sqrt(13),cDisp:'√13≈3.61' },
+  { a:3,b:5,c:Math.sqrt(34),cDisp:'√34≈5.83' },{ a:4,b:7,c:Math.sqrt(65),cDisp:'√65≈8.06' },
+  { a:5,b:9,c:Math.sqrt(106),cDisp:'√106≈10.30' }
+];
+function roundData(idx){ const r=ROUNDS[idx]; const cVal=r.cVal!==undefined?r.cVal:r.c; const cDisp=r.cDisp!==undefined?r.cDisp:String(r.c); return {a:r.a,b:r.b,cVal,cDisp}; }
+function generateOptions(cVal,cDisp){ const opts=[]; const correct={val:cVal,label:cDisp,isCorrect:true}; const d1={val:cVal+1+Math.random()*0.5,label:((cVal+1+Math.random()*0.5)%1===0?String(Math.round(cVal+1+Math.random()*0.5)):(cVal+1+Math.random()*0.5).toFixed(2)),isCorrect:false}; const d2={val:Math.abs(Math.sqrt(cVal*cVal+4)),label:(Math.abs(Math.sqrt(cVal*cVal+4))%1===0?String(Math.round(Math.abs(Math.sqrt(cVal*cVal+4)))):Math.abs(Math.sqrt(cVal*cVal+4)).toFixed(2)),isCorrect:false}; opts.push(correct,d1,d2); for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];} return opts; }
+
+const canvas=document.getElementById('triangleCanvas'); const ctx=canvas.getContext('2d');
+let canvasW=400,canvasH=320,triPoints={},dropZoneActive=false,plankLocked=false;
+let gameRound=0,gameScore=0,gameLives=3,gameTimer=20,timerInterval=null,currentRound=null,roundOptions=[],selectedPlankIndex=-1,roundActive=false,transitioning=false;
+
+function resizeCanvas(){ const cont=canvas.parentElement; const maxW=Math.min(cont.clientWidth,900), maxH=Math.min(cont.clientHeight,500); canvasW=maxW; canvasH=maxH; canvas.width=canvasW; canvas.height=canvasH; }
+function drawTriangle(){
+  const {a,b,cVal,cDisp}=currentRound; const pad=55; const maxDrawW=canvasW-pad*2,maxDrawH=canvasH-pad*2; const scale=Math.min(maxDrawW/(a*22),maxDrawH/(b*22),12); const pixA=a*scale*22,pixB=b*scale*22;
+  const cx=(canvasW-pixA)/2, cy=(canvasH-pixB)/2; const A={x:cx,y:cy+pixB},B={x:cx+pixA,y:cy+pixB},C={x:cx,y:cy}; triPoints={A,B,C}; const hypMid={x:(B.x+C.x)/2,y:(B.y+C.y)/2};
+  ctx.clearRect(0,0,canvasW,canvasH);
+  ctx.save(); ctx.strokeStyle='rgba(74,168,232,0.07)'; ctx.lineWidth=1; for(let gx=0;gx<canvasW;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,canvasH);ctx.stroke();} for(let gy=0;gy<canvasH;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(canvasW,gy);ctx.stroke();} ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.lineTo(C.x,C.y); ctx.closePath(); ctx.fillStyle='rgba(26,122,191,0.10)'; ctx.fill(); ctx.restore();
+  ctx.save(); ctx.strokeStyle='#4aa8e8'; ctx.lineWidth=2.5; ctx.shadowColor='rgba(74,168,232,0.35)'; ctx.shadowBlur=8; ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(C.x,C.y); ctx.stroke(); ctx.restore();
+  const hypColor=dropZoneActive?'#2dd4c8':'#f5c518';
+  ctx.save(); ctx.strokeStyle=hypColor; ctx.lineWidth=plankLocked?4:2.5; ctx.setLineDash(plankLocked?[]:[8,5]); ctx.shadowColor=hypColor; ctx.shadowBlur=plankLocked?18:(dropZoneActive?14:8); ctx.beginPath(); ctx.moveTo(B.x,B.y); ctx.lineTo(C.x,C.y); ctx.stroke(); ctx.restore();
+  if(dropZoneActive&&!plankLocked){ ctx.save(); ctx.strokeStyle='rgba(45,212,200,0.3)'; ctx.lineWidth=12; ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(B.x,B.y); ctx.lineTo(C.x,C.y); ctx.stroke(); ctx.restore(); }
+  ctx.save(); ctx.strokeStyle='rgba(74,168,232,0.7)'; ctx.lineWidth=1.8; const boxSize=Math.min(16,pixA*0.15,pixB*0.15); ctx.beginPath(); ctx.moveTo(A.x+boxSize,A.y); ctx.lineTo(A.x+boxSize,A.y-boxSize); ctx.lineTo(A.x,A.y-boxSize); ctx.stroke(); ctx.restore();
+  const fontSize=Math.max(13,Math.min(18,canvasW*0.038)); ctx.save(); ctx.font=`bold ${fontSize}px 'Segoe UI', sans-serif`; ctx.textAlign='center'; ctx.shadowColor='rgba(0,0,0,0.8)'; ctx.shadowBlur=6;
+  ctx.fillStyle='#e8f4fd'; ctx.fillText(`a = ${a}`,(A.x+B.x)/2,A.y+24);
+  ctx.save(); ctx.translate(A.x-28,(A.y+C.y)/2); ctx.rotate(-Math.PI/2); ctx.fillStyle='#e8f4fd'; ctx.fillText(`b = ${b}`,0,0); ctx.restore();
+  const hypAngle=Math.atan2(C.y-B.y,C.x-B.x); const cLabelX=hypMid.x+Math.cos(hypAngle+Math.PI/2)*22,cLabelY=hypMid.y+Math.sin(hypAngle+Math.PI/2)*22;
+  ctx.fillStyle=plankLocked?'#28d46a':'#f5c518'; ctx.fillText(plankLocked?cDisp:'c = ?',cLabelX,cLabelY); ctx.restore();
+  if(plankLocked){ const plankH=16,dx=B.x-C.x,dy=B.y-C.y,len=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx); ctx.save(); ctx.translate(C.x,C.y); ctx.rotate(angle); const grad=ctx.createLinearGradient(0,-plankH/2,0,plankH/2); grad.addColorStop(0,'#d9952f'); grad.addColorStop(0.4,'#b5722a'); grad.addColorStop(1,'#8c561d'); ctx.fillStyle=grad; ctx.shadowColor='#28d46a'; ctx.shadowBlur=16; ctx.beginPath(); ctx.roundRect(0,-plankH/2,len,plankH,6); ctx.fill(); ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.lineWidth=1; for(let gi=18;gi<len;gi+=18){ctx.beginPath();ctx.moveTo(gi,-plankH/2);ctx.lineTo(gi,plankH/2);ctx.stroke();} ctx.restore(); }
 }
 
-function generateOptions(cVal, cDisp) {
-  const opts = [];
-  const correct = { val: cVal, label: cDisp, isCorrect: true };
-  const decoy1Val = cVal + 1 + Math.random() * 0.5;
-  const decoy2Val = Math.abs(Math.sqrt(Math.pow(cVal, 2) + 4));
-  const decoy1 = { val: decoy1Val, label: decoy1Val % 1 === 0 ? String(Math.round(decoy1Val)) : decoy1Val.toFixed(2), isCorrect: false };
-  const decoy2 = { val: decoy2Val, label: decoy2Val % 1 === 0 ? String(Math.round(decoy2Val)) : decoy2Val.toFixed(2), isCorrect: false };
-  opts.push(correct, decoy1, decoy2);
-  // Shuffle
-  for (let i = opts.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [opts[i], opts[j]] = [opts[j], opts[i]];
-  }
-  return opts;
-}
-
-/* ============================================================
-   CANVAS DRAWING
-============================================================ */
-const canvas = document.getElementById('triangleCanvas');
-const ctx2d = canvas.getContext('2d');
-
-let canvasW = 400, canvasH = 320;
-let triPoints = {}; // {A, B, C} pixel coords of triangle vertices
-let dropZoneActive = false;
-let plankLocked = false;
-let lockedPlankIndex = -1;
-
-function resizeCanvas() {
-  const container = canvas.parentElement;
-  const maxW = Math.min(container.clientWidth, 900);
-  const maxH = Math.min(container.clientHeight, 500);
-  canvasW = maxW;
-  canvasH = maxH;
-  canvas.width = canvasW;
-  canvas.height = canvasH;
-}
-
-function drawTriangle() {
-  const { a, b, cVal, cDisp } = currentRound;
-  const pad = 55;
-  const maxDrawW = canvasW - pad * 2;
-  const maxDrawH = canvasH - pad * 2;
-  const scale = Math.min(maxDrawW / (a * 22), maxDrawH / (b * 22), 12);
-  const pixA = a * scale * 22;
-  const pixB = b * scale * 22;
-
-  // Triangle vertices: right angle at bottom-left
-  const cx = (canvasW - pixA) / 2;
-  const cy = (canvasH - pixB) / 2;
-  const A = { x: cx, y: cy + pixB };         // bottom-left (right angle)
-  const B = { x: cx + pixA, y: cy + pixB };  // bottom-right
-  const C = { x: cx, y: cy };                 // top-left
-
-  triPoints = { A, B, C };
-
-  // Hypotenuse midpoint (for drop zone detection)
-  const hypMid = {
-    x: (B.x + C.x) / 2,
-    y: (B.y + C.y) / 2,
-  };
-
-  ctx2d.clearRect(0, 0, canvasW, canvasH);
-
-  // ---- Graph paper grid (light) ----
-  ctx2d.save();
-  ctx2d.strokeStyle = 'rgba(74,168,232,0.07)';
-  ctx2d.lineWidth = 1;
-  const gridStep = 30;
-  for (let gx = 0; gx < canvasW; gx += gridStep) {
-    ctx2d.beginPath(); ctx2d.moveTo(gx, 0); ctx2d.lineTo(gx, canvasH); ctx2d.stroke();
-  }
-  for (let gy = 0; gy < canvasH; gy += gridStep) {
-    ctx2d.beginPath(); ctx2d.moveTo(0, gy); ctx2d.lineTo(canvasW, gy); ctx2d.stroke();
-  }
-  ctx2d.restore();
-
-  // ---- Triangle fill ----
-  ctx2d.save();
-  ctx2d.beginPath();
-  ctx2d.moveTo(A.x, A.y); ctx2d.lineTo(B.x, B.y); ctx2d.lineTo(C.x, C.y);
-  ctx2d.closePath();
-  ctx2d.fillStyle = 'rgba(26,122,191,0.10)';
-  ctx2d.fill();
-  ctx2d.restore();
-
-  // ---- Triangle legs ----
-  ctx2d.save();
-  ctx2d.strokeStyle = '#4aa8e8';
-  ctx2d.lineWidth = 2.5;
-  ctx2d.lineJoin = 'round';
-  ctx2d.shadowColor = 'rgba(74,168,232,0.35)';
-  ctx2d.shadowBlur = 8;
-  // leg a (horizontal)
-  ctx2d.beginPath(); ctx2d.moveTo(A.x, A.y); ctx2d.lineTo(B.x, B.y); ctx2d.stroke();
-  // leg b (vertical)
-  ctx2d.beginPath(); ctx2d.moveTo(A.x, A.y); ctx2d.lineTo(C.x, C.y); ctx2d.stroke();
-  ctx2d.restore();
-
-  // ---- Hypotenuse (dashed drop zone) ----
-  const hypColor = dropZoneActive ? '#2dd4c8' : '#f5c518';
-  ctx2d.save();
-  ctx2d.strokeStyle = hypColor;
-  ctx2d.lineWidth = plankLocked ? 4 : 2.5;
-  ctx2d.setLineDash(plankLocked ? [] : [8, 5]);
-  ctx2d.shadowColor = hypColor;
-  ctx2d.shadowBlur = plankLocked ? 18 : (dropZoneActive ? 14 : 8);
-  ctx2d.beginPath(); ctx2d.moveTo(B.x, B.y); ctx2d.lineTo(C.x, C.y);
-  ctx2d.stroke();
-  ctx2d.restore();
-
-  if (dropZoneActive && !plankLocked) {
-    // Pulsing glow on hypotenuse
-    ctx2d.save();
-    ctx2d.strokeStyle = 'rgba(45,212,200,0.3)';
-    ctx2d.lineWidth = 12;
-    ctx2d.setLineDash([]);
-    ctx2d.beginPath(); ctx2d.moveTo(B.x, B.y); ctx2d.lineTo(C.x, C.y);
-    ctx2d.stroke();
-    ctx2d.restore();
-  }
-
-  // ---- Right angle box ----
-  ctx2d.save();
-  ctx2d.strokeStyle = 'rgba(74,168,232,0.7)';
-  ctx2d.lineWidth = 1.8;
-  const boxSize = Math.min(16, pixA * 0.15, pixB * 0.15);
-  ctx2d.beginPath();
-  ctx2d.moveTo(A.x + boxSize, A.y);
-  ctx2d.lineTo(A.x + boxSize, A.y - boxSize);
-  ctx2d.lineTo(A.x, A.y - boxSize);
-  ctx2d.stroke();
-  ctx2d.restore();
-
-  // ---- Labels ----
-  const fontSize = Math.max(13, Math.min(18, canvasW * 0.038));
-  ctx2d.save();
-  ctx2d.font = `bold ${fontSize}px 'Segoe UI', sans-serif`;
-  ctx2d.textAlign = 'center';
-  ctx2d.shadowColor = 'rgba(0,0,0,0.8)';
-  ctx2d.shadowBlur = 6;
-
-  // Label a (below horizontal leg)
-  const aLabelX = (A.x + B.x) / 2;
-  const aLabelY = A.y + 24;
-  ctx2d.fillStyle = '#e8f4fd';
-  ctx2d.fillText(`a = ${a}`, aLabelX, aLabelY);
-
-  // Label b (left of vertical leg)
-  const bLabelX = A.x - 28;
-  const bLabelY = (A.y + C.y) / 2;
-  ctx2d.save();
-  ctx2d.translate(bLabelX, bLabelY);
-  ctx2d.rotate(-Math.PI / 2);
-  ctx2d.fillStyle = '#e8f4fd';
-  ctx2d.fillText(`b = ${b}`, 0, 0);
-  ctx2d.restore();
-
-  // Label c (hypotenuse)
-  const hypAngle = Math.atan2(C.y - B.y, C.x - B.x);
-  const cLabelX = hypMid.x + Math.cos(hypAngle + Math.PI / 2) * 22;
-  const cLabelY = hypMid.y + Math.sin(hypAngle + Math.PI / 2) * 22;
-  ctx2d.fillStyle = plankLocked ? '#28d46a' : '#f5c518';
-  ctx2d.fillText(plankLocked ? cDisp : 'c = ?', cLabelX, cLabelY);
-  ctx2d.restore();
-
-  // ---- Locked plank visual ----
-  if (plankLocked) {
-    const plankH = 16;
-    const dx = B.x - C.x, dy = B.y - C.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
-    const angle = Math.atan2(dy, dx);
-    ctx2d.save();
-    ctx2d.translate(C.x, C.y);
-    ctx2d.rotate(angle);
-    const grad = ctx2d.createLinearGradient(0, -plankH / 2, 0, plankH / 2);
-    grad.addColorStop(0, '#d9952f');
-    grad.addColorStop(0.4, '#b5722a');
-    grad.addColorStop(1, '#8c561d');
-    ctx2d.fillStyle = grad;
-    ctx2d.shadowColor = '#28d46a';
-    ctx2d.shadowBlur = 16;
-    ctx2d.beginPath();
-    ctx2d.roundRect(0, -plankH / 2, len, plankH, 6);
-    ctx2d.fill();
-    // Wood grain
-    ctx2d.strokeStyle = 'rgba(0,0,0,0.1)';
-    ctx2d.lineWidth = 1;
-    for (let gi = 18; gi < len; gi += 18) {
-      ctx2d.beginPath(); ctx2d.moveTo(gi, -plankH / 2); ctx2d.lineTo(gi, plankH / 2); ctx2d.stroke();
-    }
-    ctx2d.restore();
-  }
-}
-
-/* ============================================================
-   GAME STATE
-============================================================ */
-let gameRound = 0;
-let gameScore = 0;
-let gameLives = 3;
-let gameTimer = 20;
-let timerInterval = null;
-let currentRound = null;
-let roundOptions = [];
-let selectedPlankIndex = -1;
-let roundActive = false;
-let transitioning = false;
-
-/* ============================================================
-   GAME INIT & ROUND LOGIC
-============================================================ */
-function startGame() {
-  gameRound = 0;
-  gameScore = 0;
-  gameLives = 3;
-  gameTimer = 20;
-  selectedPlankIndex = -1;
-  plankLocked = false;
-  dropZoneActive = false;
-  updateHUD();
-  showScreen('gameScreen');
-  startBgMusic();
-  setTimeout(() => {
-    resizeCanvas();
-    loadRound(0);
-  }, 100);
-}
-
-function loadRound(idx) {
-  if (idx >= 10) { endGame(true); return; }
-  if (gameLives <= 0) { endGame(false); return; }
-
-  roundActive = false;
-  plankLocked = false;
-  dropZoneActive = false;
-  selectedPlankIndex = -1;
-  transitioning = false;
-
-  currentRound = roundData(idx);
-  roundOptions = generateOptions(currentRound.cVal, currentRound.cDisp);
-
-  // Update plank labels
-  document.getElementById('plank0Label').textContent = roundOptions[0].label;
-  document.getElementById('plank1Label').textContent = roundOptions[1].label;
-  document.getElementById('plank2Label').textContent = roundOptions[2].label;
-
-  // Clear selection highlights
-  document.querySelectorAll('.plank-option').forEach(el => {
-    el.classList.remove('selected', 'correct-flash', 'wrong-flash');
-  });
-
-  // Update HUD
-  document.getElementById('roundVal').textContent = idx + 1;
-  updateHUD();
-
-  // Draw fresh triangle
-  resizeCanvas();
-  drawTriangle();
-
-  // Show round notif (not first round)
-  if (idx > 0) showRoundNotif(idx + 1);
-
-  // Start timer
-  clearInterval(timerInterval);
-  gameTimer = 20;
-  updateTimerDisplay();
-  roundActive = true;
-  timerInterval = setInterval(tickTimer, 1000);
-}
-
-function showRoundNotif(roundNum) {
-  const notif = document.getElementById('roundNotif');
-  notif.textContent = `🔺 Round ${roundNum} — New Triangle!`;
-  notif.classList.add('show');
-  setTimeout(() => notif.classList.remove('show'), 2200);
-}
-
-function tickTimer() {
-  if (!roundActive) return;
-  gameTimer--;
-  updateTimerDisplay();
-  if (gameTimer <= 0) {
-    clearInterval(timerInterval);
-    roundActive = false;
-    onTimerExpired();
-  }
-}
-
-function updateTimerDisplay() {
-  const el = document.getElementById('timerVal');
-  el.textContent = gameTimer;
-  if (gameTimer <= 5) el.classList.add('urgent');
-  else el.classList.remove('urgent');
-}
-
-function onTimerExpired() {
-  // No life lost, no points, just move on
-  playSound('roundComplete');
-  showResultIcon(false, false); // show nothing on timer expire
-  setTimeout(() => advanceRound(), 1200);
-}
-
-function advanceRound() {
-  if (transitioning) return;
-  transitioning = true;
-  clearInterval(timerInterval);
-  gameRound++;
-  hideResultIcon();
-  if (gameRound >= 10 || gameLives <= 0) {
-    endGame(gameLives > 0 && gameRound >= 10);
-  } else {
-    loadRound(gameRound);
-  }
-}
-
-function updateHUD() {
-  document.getElementById('scoreVal').textContent = gameScore;
-  const lifeIcons = document.querySelectorAll('.life-icon');
-  lifeIcons.forEach((icon, i) => {
-    if (i < gameLives) icon.classList.remove('lost');
-    else icon.classList.add('lost');
-  });
-}
-
-/* ============================================================
-   PLANK SELECTION & PLACEMENT
-============================================================ */
-function selectPlank(index) {
-  if (!roundActive || plankLocked) return;
-  selectedPlankIndex = index;
-  document.querySelectorAll('.plank-option').forEach((el, i) => {
-    el.classList.toggle('selected', i === index);
-  });
-  playSound('select');
-}
-
-function confirmPlacement() {
-  if (!roundActive || plankLocked || selectedPlankIndex < 0) return;
-  handlePlankPlacement(selectedPlankIndex);
-}
-
-function handlePlankPlacement(plankIndex) {
-  if (!roundActive || plankLocked) return;
-  clearInterval(timerInterval);
-  roundActive = false;
-
-  const chosen = roundOptions[plankIndex];
-  const isCorrect = chosen.isCorrect;
-  const plankEl = document.querySelectorAll('.plank-option')[plankIndex];
-
-  if (isCorrect) {
-    playSound('correct');
-    plankEl.classList.add('correct-flash');
-    plankLocked = true;
-    lockedPlankIndex = plankIndex;
-    const bonus = Math.max(0, Math.floor(gameTimer) * 5);
-    const pts = 100 + bonus;
-    gameScore += pts;
-    updateHUD();
-    showScorePop(pts);
-    drawTriangle();
-    showResultIcon(true);
-    playSound('roundComplete');
-    setTimeout(() => advanceRound(), 1800);
-  } else {
-    playSound('wrong');
-    plankEl.classList.add('wrong-flash');
-    gameLives--;
-    updateHUD();
-    showResultIcon(false, true);
-    playSound('lifeLost');
-    if (gameLives <= 0) {
-      setTimeout(() => endGame(false), 1500);
-    } else {
-      setTimeout(() => {
-        hideResultIcon();
-        plankEl.classList.remove('wrong-flash');
-        roundActive = true;
-        timerInterval = setInterval(tickTimer, 1000);
-      }, 900);
-    }
-  }
-}
-
-function showResultIcon(correct, showWrong = false) {
-  const overlay = document.getElementById('resultOverlay');
-  const icon = document.getElementById('resultIcon');
-  if (correct) {
-    icon.src = 'correct.jpg';
-    icon.alt = 'Correct!';
-  } else if (showWrong) {
-    icon.src = 'wrong.png';
-    icon.alt = 'Wrong';
-  } else {
-    overlay.classList.remove('show');
-    return;
-  }
-  overlay.classList.add('show');
-}
-
-function hideResultIcon() {
-  document.getElementById('resultOverlay').classList.remove('show');
-}
-
-function showScorePop(pts) {
-  const pop = document.createElement('div');
-  pop.className = 'score-pop';
-  pop.textContent = `+${pts}`;
-  const rect = canvas.getBoundingClientRect();
-  pop.style.left = (rect.left + rect.width / 2 - 30) + 'px';
-  pop.style.top = (rect.top + rect.height / 2 - 40) + 'px';
-  document.body.appendChild(pop);
-  setTimeout(() => pop.remove(), 1300);
-}
-
-/* ============================================================
-   DRAG & DROP — MOUSE
-============================================================ */
-let isDragging = false;
-let dragPlankIndex = -1;
-let dragGhost = document.getElementById('dragGhost');
-let dragOffX = 0, dragOffY = 0;
-
-function getPlankElements() {
-  return document.querySelectorAll('.plank-option');
-}
-
-function setupDrag() {
-  getPlankElements().forEach((el, i) => {
-    el.addEventListener('mousedown', e => startDragMouse(e, i));
-    el.addEventListener('touchstart', e => startDragTouch(e, i), { passive: false });
-    el.addEventListener('click', () => selectPlank(i));
-  });
-}
-
-function startDragMouse(e, index) {
-  if (!roundActive || plankLocked) return;
-  e.preventDefault();
-  selectPlank(index);
-  dragPlankIndex = index;
-  isDragging = true;
-  playSound('dragStart');
-  showDragGhost(e.clientX, e.clientY, index);
-  document.addEventListener('mousemove', onDragMouseMove);
-  document.addEventListener('mouseup', onDragMouseUp);
-}
-
-function onDragMouseMove(e) {
-  if (!isDragging) return;
-  moveDragGhost(e.clientX, e.clientY);
-  checkDropZone(e.clientX, e.clientY);
-}
-
-function onDragMouseUp(e) {
-  if (!isDragging) return;
-  isDragging = false;
-  hideDragGhost();
-  document.removeEventListener('mousemove', onDragMouseMove);
-  document.removeEventListener('mouseup', onDragMouseUp);
-  if (isOverDropZone(e.clientX, e.clientY)) {
-    handlePlankPlacement(dragPlankIndex);
-  }
-  dropZoneActive = false;
-  drawTriangle();
-}
-
-/* ============================================================
-   DRAG & DROP — TOUCH
-============================================================ */
-function startDragTouch(e, index) {
-  if (!roundActive || plankLocked) return;
-  e.preventDefault();
-  selectPlank(index);
-  dragPlankIndex = index;
-  isDragging = true;
-  playSound('dragStart');
-  const touch = e.touches[0];
-  showDragGhost(touch.clientX, touch.clientY, index);
-  document.addEventListener('touchmove', onDragTouchMove, { passive: false });
-  document.addEventListener('touchend', onDragTouchEnd);
-}
-
-function onDragTouchMove(e) {
-  if (!isDragging) return;
-  e.preventDefault();
-  const touch = e.touches[0];
-  moveDragGhost(touch.clientX, touch.clientY);
-  checkDropZone(touch.clientX, touch.clientY);
-}
-
-function onDragTouchEnd(e) {
-  if (!isDragging) return;
-  isDragging = false;
-  hideDragGhost();
-  document.removeEventListener('touchmove', onDragTouchMove);
-  document.removeEventListener('touchend', onDragTouchEnd);
-  const touch = e.changedTouches[0];
-  if (isOverDropZone(touch.clientX, touch.clientY)) {
-    handlePlankPlacement(dragPlankIndex);
-  }
-  dropZoneActive = false;
-  drawTriangle();
-}
-
-/* ============================================================
-   GHOST & DROP ZONE HELPERS
-============================================================ */
-function showDragGhost(x, y, index) {
-  const label = roundOptions[index] ? roundOptions[index].label : '?';
-  dragGhost.textContent = label;
-  dragGhost.style.width = '130px';
-  dragGhost.style.height = '50px';
-  dragGhost.style.lineHeight = '50px';
-  dragGhost.style.textAlign = 'center';
-  dragGhost.style.fontSize = '1rem';
-  dragGhost.style.fontWeight = '900';
-  dragGhost.style.color = '#fff2d0';
-  moveDragGhost(x, y);
-  dragGhost.classList.add('visible');
-  dragGhost.style.display = 'flex';
-}
-
-function moveDragGhost(x, y) {
-  dragGhost.style.left = (x - 65) + 'px';
-  dragGhost.style.top = (y - 25) + 'px';
-}
-
-function hideDragGhost() {
-  dragGhost.style.display = 'none';
-  dragGhost.classList.remove('visible');
-}
-
-function getCanvasRect() {
-  return canvas.getBoundingClientRect();
-}
-
-function isOverDropZone(clientX, clientY) {
-  const rect = getCanvasRect();
-  const cx = clientX - rect.left;
-  const cy = clientY - rect.top;
-  // Scale to canvas coords
-  const sx = cx * (canvasW / rect.width);
-  const sy = cy * (canvasH / rect.height);
-  return isNearHypotenuse(sx, sy);
-}
-
-function isNearHypotenuse(px, py) {
-  if (!triPoints.B || !triPoints.C) return false;
-  const { B, C } = triPoints;
-  // Distance from point to line segment B-C
-  const dx = C.x - B.x, dy = C.y - B.y;
-  const len2 = dx * dx + dy * dy;
-  if (len2 === 0) return false;
-  let t = ((px - B.x) * dx + (py - B.y) * dy) / len2;
-  t = Math.max(0, Math.min(1, t));
-  const closestX = B.x + t * dx;
-  const closestY = B.y + t * dy;
-  const dist = Math.sqrt((px - closestX) ** 2 + (py - closestY) ** 2);
-  // Also check if cursor is roughly inside the triangle bounding box
-  const minX = Math.min(B.x, C.x) - 30;
-  const maxX = Math.max(B.x, C.x) + 30;
-  const minY = Math.min(B.y, C.y) - 30;
-  const maxY = Math.max(B.y, C.y) + 30;
-  return dist < 50 && px >= minX && px <= maxX && py >= minY && py <= maxY;
-}
-
-function checkDropZone(clientX, clientY) {
-  const wasActive = dropZoneActive;
-  dropZoneActive = isOverDropZone(clientX, clientY);
-  if (wasActive !== dropZoneActive) drawTriangle();
-}
-
-/* ============================================================
-   KEYBOARD CONTROLS
-============================================================ */
-document.addEventListener('keydown', e => {
-  const key = e.key;
-  if (key === '1') selectPlank(0);
-  else if (key === '2') selectPlank(1);
-  else if (key === '3') selectPlank(2);
-  else if (key === 'Enter' || key === ' ') {
-    e.preventDefault();
-    confirmPlacement();
-  }
-  else if (key === 'm' || key === 'M') toggleMute();
-});
-
-/* ============================================================
-   END GAME
-============================================================ */
-function endGame(win) {
-  clearInterval(timerInterval);
-  roundActive = false;
-  stopBgMusic();
-
-  document.getElementById('finalScore').textContent = gameScore;
-  document.getElementById('finalRounds').textContent = Math.min(gameRound, 10);
-
-  const livesEl = document.getElementById('finalLives');
-  let livesHTML = '';
-  for (let i = 0; i < gameLives; i++) {
-    livesHTML += `<img src="heart.jpg" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"/>`;
-  }
-  if (gameLives === 0) livesHTML = '💔';
-  livesEl.innerHTML = livesHTML;
-
-  const titleEl = document.getElementById('endTitle');
-  const subtitleEl = document.getElementById('endSubtitle');
-
-  if (win) {
-    titleEl.textContent = '🏆 Victory!';
-    titleEl.className = 'end-title win';
-    subtitleEl.textContent = `Amazing! You completed all 10 rounds with a score of ${gameScore}!`;
-    playSound('victory');
-  } else {
-    titleEl.textContent = gameLives <= 0 ? '💔 Game Over' : '⏰ Time\'s Up!';
-    titleEl.className = 'end-title lose';
-    subtitleEl.textContent = `You scored ${gameScore} points. Keep practising — you got this!`;
-    playSound('gameOver');
-  }
-
+function startGame(){ gameRound=0;gameScore=0;gameLives=3;gameTimer=20;selectedPlankIndex=-1;plankLocked=false;dropZoneActive=false; updateHUD(); showScreen('gameScreen'); startBgMusic(); setTimeout(()=>{resizeCanvas();loadRound(0);},100); }
+function loadRound(idx){ if(idx>=10){endGame(true);return;} if(gameLives<=0){endGame(false);return;} roundActive=false;plankLocked=false;dropZoneActive=false;selectedPlankIndex=-1;transitioning=false; currentRound=roundData(idx); roundOptions=generateOptions(currentRound.cVal,currentRound.cDisp); document.getElementById('plank0Label').textContent=roundOptions[0].label; document.getElementById('plank1Label').textContent=roundOptions[1].label; document.getElementById('plank2Label').textContent=roundOptions[2].label; document.querySelectorAll('.plank-option').forEach(el=>el.classList.remove('selected','correct-flash','wrong-flash')); document.getElementById('roundVal').textContent=idx+1; updateHUD(); resizeCanvas(); drawTriangle(); if(idx>0)showRoundNotif(idx+1); clearInterval(timerInterval); gameTimer=20; updateTimerDisplay(); roundActive=true; timerInterval=setInterval(tickTimer,1000); }
+function showRoundNotif(roundNum){ const n=document.getElementById('roundNotif'); n.textContent=`🔺 Round ${roundNum} — New Triangle!`; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); }
+function tickTimer(){ if(!roundActive)return; gameTimer--; updateTimerDisplay(); if(gameTimer<=0){clearInterval(timerInterval);roundActive=false;onTimerExpired();} }
+function updateTimerDisplay(){ const el=document.getElementById('timerVal'); el.textContent=gameTimer; el.classList.toggle('urgent',gameTimer<=5); }
+function onTimerExpired(){ playSound('roundComplete'); showResultIcon(false,false); setTimeout(()=>advanceRound(),1200); }
+function advanceRound(){ if(transitioning)return; transitioning=true; clearInterval(timerInterval); gameRound++; hideResultIcon(); if(gameRound>=10||gameLives<=0){endGame(gameLives>0&&gameRound>=10);}else{loadRound(gameRound);} }
+function updateHUD(){ document.getElementById('scoreVal').textContent=gameScore; const lifeIcons=document.querySelectorAll('.life-icon'); lifeIcons.forEach((icon,i)=>{icon.classList.toggle('lost',i>=gameLives);}); }
+function selectPlank(index){ if(!roundActive||plankLocked)return; selectedPlankIndex=index; document.querySelectorAll('.plank-option').forEach((el,i)=>el.classList.toggle('selected',i===index)); playSound('select'); }
+function confirmPlacement(){ if(!roundActive||plankLocked||selectedPlankIndex<0)return; handlePlankPlacement(selectedPlankIndex); }
+function handlePlankPlacement(plankIndex){ if(!roundActive||plankLocked)return; clearInterval(timerInterval); roundActive=false; const chosen=roundOptions[plankIndex]; const isCorrect=chosen.isCorrect; const plankEl=document.querySelectorAll('.plank-option')[plankIndex]; if(isCorrect){ playSound('correct'); plankEl.classList.add('correct-flash'); plankLocked=true; const bonus=Math.max(0,Math.floor(gameTimer)*5); const pts=100+bonus; gameScore+=pts; updateHUD(); showScorePop(pts); drawTriangle(); showResultIcon(true); playSound('roundComplete'); setTimeout(()=>advanceRound(),1800); } else { playSound('wrong'); plankEl.classList.add('wrong-flash'); gameLives--; updateHUD(); showResultIcon(false,true); playSound('lifeLost'); if(gameLives<=0){ setTimeout(()=>endGame(false),1500); } else { setTimeout(()=>{hideResultIcon();plankEl.classList.remove('wrong-flash');roundActive=true;timerInterval=setInterval(tickTimer,1000);},900); } } }
+function showResultIcon(correct,showWrong=false){ const overlay=document.getElementById('resultOverlay'); const icon=document.getElementById('resultIcon'); if(correct){icon.src='correct.png'; icon.alt='Correct'; overlay.classList.add('show');} else if(showWrong){icon.src='wrong.png'; icon.alt='Wrong'; overlay.classList.add('show');} else { overlay.classList.remove('show');} }
+function hideResultIcon(){ document.getElementById('resultOverlay').classList.remove('show'); }
+function showScorePop(pts){ const pop=document.createElement('div'); pop.className='score-pop'; pop.textContent=`+${pts}`; const rect=canvas.getBoundingClientRect(); pop.style.left=(rect.left+rect.width/2-30)+'px'; pop.style.top=(rect.top+rect.height/2-40)+'px'; document.body.appendChild(pop); setTimeout(()=>pop.remove(),1300); }
+
+/* DRAG */
+let isDragging=false,dragPlankIndex=-1,dragGhost=document.getElementById('dragGhost');
+function getPlankElements(){return document.querySelectorAll('.plank-option');}
+function setupDrag(){ getPlankElements().forEach((el,i)=>{ el.addEventListener('mousedown',e=>startDragMouse(e,i)); el.addEventListener('touchstart',e=>startDragTouch(e,i),{passive:false}); el.addEventListener('click',()=>selectPlank(i)); }); }
+function startDragMouse(e,index){ if(!roundActive||plankLocked)return; e.preventDefault(); selectPlank(index); dragPlankIndex=index; isDragging=true; playSound('dragStart'); showDragGhost(e.clientX,e.clientY,index); document.addEventListener('mousemove',onDragMouseMove); document.addEventListener('mouseup',onDragMouseUp); }
+function onDragMouseMove(e){ if(!isDragging)return; moveDragGhost(e.clientX,e.clientY); checkDropZone(e.clientX,e.clientY); }
+function onDragMouseUp(e){ if(!isDragging)return; isDragging=false; hideDragGhost(); document.removeEventListener('mousemove',onDragMouseMove); document.removeEventListener('mouseup',onDragMouseUp); if(isOverDropZone(e.clientX,e.clientY))handlePlankPlacement(dragPlankIndex); dropZoneActive=false; drawTriangle(); }
+function startDragTouch(e,index){ if(!roundActive||plankLocked)return; e.preventDefault(); selectPlank(index); dragPlankIndex=index; isDragging=true; playSound('dragStart'); const touch=e.touches[0]; showDragGhost(touch.clientX,touch.clientY,index); document.addEventListener('touchmove',onDragTouchMove,{passive:false}); document.addEventListener('touchend',onDragTouchEnd); }
+function onDragTouchMove(e){ if(!isDragging)return; e.preventDefault(); const touch=e.touches[0]; moveDragGhost(touch.clientX,touch.clientY); checkDropZone(touch.clientX,touch.clientY); }
+function onDragTouchEnd(e){ if(!isDragging)return; isDragging=false; hideDragGhost(); document.removeEventListener('touchmove',onDragTouchMove); document.removeEventListener('touchend',onDragTouchEnd); const touch=e.changedTouches[0]; if(isOverDropZone(touch.clientX,touch.clientY))handlePlankPlacement(dragPlankIndex); dropZoneActive=false; drawTriangle(); }
+function showDragGhost(x,y,index){ const label=roundOptions[index]?roundOptions[index].label:'?'; dragGhost.textContent=label; dragGhost.style.width='130px'; dragGhost.style.height='50px'; dragGhost.style.lineHeight='50px'; dragGhost.style.textAlign='center'; dragGhost.style.fontSize='1rem'; dragGhost.style.fontWeight='900'; dragGhost.style.color='#fff2d0'; moveDragGhost(x,y); dragGhost.classList.add('visible'); dragGhost.style.display='flex'; }
+function moveDragGhost(x,y){ dragGhost.style.left=(x-65)+'px'; dragGhost.style.top=(y-25)+'px'; }
+function hideDragGhost(){ dragGhost.style.display='none'; dragGhost.classList.remove('visible'); }
+function getCanvasRect(){return canvas.getBoundingClientRect();}
+function isOverDropZone(clientX,clientY){ const rect=getCanvasRect(); const cx=(clientX-rect.left)*(canvasW/rect.width); const cy=(clientY-rect.top)*(canvasH/rect.height); return isNearHypotenuse(cx,cy); }
+function isNearHypotenuse(px,py){ if(!triPoints.B||!triPoints.C)return false; const {B,C}=triPoints; const dx=C.x-B.x,dy=C.y-B.y; const len2=dx*dx+dy*dy; if(len2===0)return false; let t=((px-B.x)*dx+(py-B.y)*dy)/len2; t=Math.max(0,Math.min(1,t)); const closestX=B.x+t*dx,closestY=B.y+t*dy; const dist=Math.sqrt((px-closestX)**2+(py-closestY)**2); const minX=Math.min(B.x,C.x)-30,maxX=Math.max(B.x,C.x)+30,minY=Math.min(B.y,C.y)-30,maxY=Math.max(B.y,C.y)+30; return dist<50&&px>=minX&&px<=maxX&&py>=minY&&py<=maxY; }
+function checkDropZone(clientX,clientY){ const wasActive=dropZoneActive; dropZoneActive=isOverDropZone(clientX,clientY); if(wasActive!==dropZoneActive)drawTriangle(); }
+document.addEventListener('keydown',e=>{ const key=e.key; if(key==='1')selectPlank(0); else if(key==='2')selectPlank(1); else if(key==='3')selectPlank(2); else if(key==='Enter'||key===' '){e.preventDefault();confirmPlacement();} else if(key==='m'||key==='M')toggleMute(); });
+setupDrag();
+window.addEventListener('resize',()=>{ if(document.getElementById('gameScreen').classList.contains('active')){resizeCanvas();drawTriangle();} });
+
+/* END GAME with 3‑star grading */
+function endGame(win){
+  clearInterval(timerInterval); roundActive=false; stopBgMusic();
+  document.getElementById('finalScore').textContent=gameScore;
+  document.getElementById('finalRounds').textContent=Math.min(gameRound,10);
+  const livesEl=document.getElementById('finalLives'); let lhtml=''; for(let i=0;i<gameLives;i++) lhtml+='❤️'; if(gameLives===0) lhtml='💔'; livesEl.innerHTML=lhtml;
+  const titleEl=document.getElementById('endTitle'); const subEl=document.getElementById('endSubtitle');
+  // 3‑star grading based on score
+  let stars=0;
+  if(gameScore>=1000) stars=3;
+  else if(gameScore>=700) stars=2;
+  else if(gameScore>=300) stars=1;
+  const starEls=document.querySelectorAll('#starRating span');
+  starEls.forEach((el,i)=>{ el.classList.toggle('active',i<stars); });
+  if(win && gameLives>0){ titleEl.textContent='🏆 Victory!'; titleEl.className='end-title win'; subEl.textContent=`Amazing! Score: ${gameScore} · ${stars}⭐`; playSound('victory'); }
+  else { titleEl.textContent=gameLives<=0?'💔 Game Over':'⏰ Time\'s Up!'; titleEl.className='end-title lose'; subEl.textContent=`Score: ${gameScore} · ${stars}⭐. Keep practising!`; playSound('gameOver'); }
   showScreen('endScreen');
 }
-
-/* ============================================================
-   RESIZE HANDLER
-============================================================ */
-window.addEventListener('resize', () => {
-  if (document.getElementById('gameScreen').classList.contains('active')) {
-    resizeCanvas();
-    drawTriangle();
-  }
-});
-
-/* ============================================================
-   INIT DRAG LISTENERS
-============================================================ */
-setupDrag();
-
 </script>
 </body>
 </html>
